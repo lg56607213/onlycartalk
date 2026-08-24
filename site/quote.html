@@ -8,6 +8,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="car-data.js"></script>
+<link rel="stylesheet" href="assets/style.css">
 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,10 +34,10 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 80px; }
+  .qwrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 80px; }
 
   /* ---------- header ---------- */
-  header { margin-bottom: 22px; }
+  .qhead { margin-bottom: 22px; }
   .brand { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--accent); }
   h1 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin-top: 6px; line-height: 1.3; }
   .sub { color: var(--ink-soft); font-size: 14px; margin-top: 8px; }
@@ -114,7 +115,7 @@
   .sum-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.55; }
 
   /* ---------- nav ---------- */
-  .nav { display: flex; gap: 10px; margin-top: 20px; }
+  .qnav { display: flex; gap: 10px; margin-top: 20px; }
   .btn {
     flex: 1; border: none; border-radius: 10px; padding: 14px;
     font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: .15s;
@@ -149,14 +150,27 @@
 </head>
 <body>
 
-<div class="wrap">
+<header class="hd">
+  <div class="wrap hd-in">
+    <a class="logo" href="index.html">ONLY<span>CARTALK</span></a>
+    <button class="burger" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="products.html">상품안내</a>
+      <a href="services.html">법인 서비스</a>
+      <a href="about.html">회사소개</a>
+      <a class="hd-cta" href="quote.html">견적 신청</a>
+    </nav>
+  </div>
+</header>
 
-  <header>
+<div class="qwrap">
+
+  <div class="qhead">
     <div class="brand">ONLYCARTALK</div>
     <h1>법인 · 개인사업자<br>승용차 리스 견적</h1>
     <p class="sub">차량과 옵션을 고르시면 조건에 맞는 견적서를 이메일로 보내드립니다.</p>
     <div class="promise">전화번호 없이 이메일만 남기셔도 됩니다. 영업 전화는 드리지 않습니다.</div>
-  </header>
+  </div>
 
   <div id="prog">
     <div class="prog">
@@ -266,7 +280,7 @@
       <div class="sum" id="final-sum"></div>
     </section>
 
-    <div class="nav">
+    <div class="qnav">
       <button type="button" class="btn btn-sub hidden" id="btn-prev">이전</button>
       <button type="button" class="btn btn-main" id="btn-next" disabled>다음</button>
     </div>
@@ -280,6 +294,28 @@
   </div>
 
 </div>
+
+
+<footer>
+  <div class="wrap">
+    <div class="fl">
+      <div>
+        <div class="logo">ONLY<span>CARTALK</span></div>
+        <p style="margin-top:8px;max-width:34ch">법인·개인사업자 전용 승용차 렌트·리스·할부</p>
+      </div>
+      <div class="fnav">
+        <a href="products.html">상품안내</a>
+        <a href="services.html">법인 서비스</a>
+        <a href="about.html">회사소개</a>
+        <a href="quote.html">견적 신청</a>
+      </div>
+    </div>
+    <p class="copy">
+      상호 · 대표자 · 사업자등록번호 · 주소 표기 예정<br>
+      차량 가격은 제조사 공개 가격표 기준이며, 실제 계약 조건은 심사 결과에 따라 달라집니다.
+    </p>
+  </div>
+</footer>
 
 <div class="loading" id="loading"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
@@ -296,6 +332,7 @@ if (window.wcs && wcs_add["wa"]) {
 }
 </script>
 
+<script src="assets/site.js"></script>
 <script>
 /* ================================================
    EmailJS
@@ -305,24 +342,6 @@ const EMAILJS_SERVICE_ID  = "service_387x2ka";
 const EMAILJS_TEMPLATE_ID = "template_gd18ywl";
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
-/* ================================================
-   네이버 전환 보고
-   ------------------------------------------------
-   폼 전송이 "성공한 순간"에만 부른다.
-   페이지 진입만으로 부르면 전환수가 부풀려져 판단이 망가진다.
-
-   type 2 = 신청/상담. 리스는 구매가 아니라 문의가 전환이다.
-   wcs.trans 는 장바구니·구매 전환용이라 이 호출을 전환으로 세지 않는다.
-   ================================================ */
-function octConversion(value) {
-  try {
-    if (!window.wcs) return;
-    if (!window.wcs_add || !wcs_add["wa"]) return;   // 인증키 미설정이면 조용히 넘어간다
-    if (!window._nasa) window._nasa = {};
-    _nasa["cnv"] = wcs.cnv("2", String(value == null ? 0 : value));
-    wcs_do(_nasa);
-  } catch (e) {}
-}
 
 /* ================================================
    상태
