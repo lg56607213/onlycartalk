@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>견적 신청 | OnlyCartalk</title>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F5F6F8;
+    color: #1A1A2E;
+    min-height: 100vh;
+  }
+
+  /* ===== LAYOUT ===== */
+  .page-wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 0.5px solid #E2E4EA;
+    width: 100%;
+    max-width: 600px;
+    padding: 36px 32px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+  }
+
+  /* ===== HEADER ===== */
+  .form-header { text-align: center; margin-bottom: 32px; }
+  .brand-tag {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #B07D20;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .form-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0A1628;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .form-header h1 span { color: #C9A84C; }
+  .form-header p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  /* ===== PROGRESS ===== */
+  .progress {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 36px;
+  }
+  .ps { flex: 1; text-align: center; position: relative; }
+  .pd {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid #DADDE5;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 6px;
+    font-size: 12px; font-weight: 700;
+    color: #BEC2CC;
+    position: relative; z-index: 2;
+    transition: all 0.25s;
+  }
+  .pd.done { background: #0A1628; border-color: #0A1628; color: #C9A84C; }
+  .pd.act  { background: #C9A84C; border-color: #C9A84C; color: #0A1628; }
+  .pl {
+    position: absolute;
+    top: 15px; left: 50%; right: -50%;
+    height: 1.5px; background: #DADDE5; z-index: 1;
+  }
+  .pl.done { background: #0A1628; }
+  .plb { font-size: 10px; color: #BEC2CC; font-weight: 500; }
+  .plb.act { color: #0A1628; font-weight: 700; }
+
+  /* ===== STEP SECTIONS ===== */
+  .step { display: none; }
+  .step.act { display: block; }
+  .sec-eyebrow {
+    font-size: 10px; letter-spacing: 0.14em;
+    color: #B07D20; font-weight: 700;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .sec-title {
+    font-size: 17px; font-weight: 800;
+    color: #0A1628; margin-bottom: 6px;
+  }
+  .sec-desc {
+    font-size: 13px; color: #888;
+    line-height: 1.65; margin-bottom: 24px;
+  }
+  .frow { margin-bottom: 22px; }
+  .flabel {
+    display: block; font-size: 12px; font-weight: 700;
+    color: #444; margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ===== CHIP BUTTONS ===== */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 9px 18px;
+    border-radius: 20px;
+    border: 1px solid #DADDE5;
+    background: #fff;
+    color: #555;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: #C9A84C; color: #0A1628; }
+  .chip.sel { background: #0A1628; border-color: #0A1628; color: #C9A84C; font-weight: 700; }
+
+  /* ===== SUB CHIPS (차종/트림/옵션) ===== */
+  .sub-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sub-chip {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #EAECF0;
+    background: #F8F9FB;
+    color: #555;
+    font-size: 12px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sub-chip:hover { border-color: #C9A84C; }
+  .sub-chip.sel { background: #0A1628; border-color: #0A1628; color: #C9A84C; font-weight: 700; }
+
+  /* ===== PRICE CARD ===== */
+  .price-card {
+    background: #F8F9FB;
+    border-radius: 12px;
+    border: 1px solid #EAECF0;
+    padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 20px;
+  }
+  .price-main { font-size: 22px; font-weight: 800; color: #0A1628; }
+  .price-main small { font-size: 13px; font-weight: 400; color: #888; margin-left: 4px; }
+  .price-note { font-size: 11px; color: #AAA; text-align: right; line-height: 1.6; }
+
+  /* ===== CONDITION GRID ===== */
+  .cond-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 400px) { .cond-grid { grid-template-columns: 1fr; } }
+
+  /* ===== CREDIT CARDS ===== */
+  .credit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 400px) { .credit-grid { grid-template-columns: 1fr; } }
+  .credit-card {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #DADDE5;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .credit-card:hover { border-color: #C9A84C; }
+  .credit-card.sel { background: #0A1628; border-color: #0A1628; }
+  .credit-card .ct { font-size: 14px; font-weight: 700; color: #0A1628; transition: color 0.15s; }
+  .credit-card .cs { font-size: 11px; color: #AAA; margin-top: 3px; transition: color 0.15s; }
+  .credit-card.sel .ct { color: #C9A84C; }
+  .credit-card.sel .cs { color: rgba(201,168,76,0.65); }
+
+  /* ===== NOTIFY BUTTONS ===== */
+  .noti-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .noti-btn {
+    flex: 1; min-width: 100px;
+    padding: 16px 12px;
+    border-radius: 12px;
+    border: 1px solid #DADDE5;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .noti-btn:hover { border-color: #C9A84C; }
+  .noti-btn.sel { background: #0A1628; border-color: #0A1628; }
+  .noti-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+  .noti-label { font-size: 13px; font-weight: 700; color: #444; transition: color 0.15s; }
+  .noti-btn.sel .noti-label { color: #C9A84C; }
+
+  /* ===== CONTACT INPUT ===== */
+  .contact-reveal {
+    background: #F8F9FB;
+    border-radius: 12px;
+    border: 1px solid #EAECF0;
+    padding: 18px 20px;
+    margin-top: 4px;
+  }
+  .input-field {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #DADDE5;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1A1A2E;
+    background: #fff;
+    outline: none;
+    transition: border 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+  }
+  .input-field:focus {
+    border-color: #C9A84C;
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+  .contact-hint {
+    font-size: 11px; color: #AAA;
+    margin-top: 10px; line-height: 1.7;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider { height: 0.5px; background: #EAECF0; margin: 24px 0; }
+
+  /* ===== SUMMARY ===== */
+  .summary-card {
+    background: #F8F9FB;
+    border-radius: 12px;
+    border: 1px solid #EAECF0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .sum-row {
+    display: flex; justify-content: space-between;
+    align-items: flex-start;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .sum-row + .sum-row { border-top: 0.5px solid #EAECF0; }
+  .sum-key { color: #888; white-space: nowrap; padding-right: 12px; }
+  .sum-val { color: #0A1628; font-weight: 600; text-align: right; }
+
+  /* ===== BUTTONS ===== */
+  .btn-row { display: flex; gap: 10px; margin-top: 28px; }
+  .btn-prev {
+    padding: 13px 22px;
+    border: 1px solid #DADDE5;
+    border-radius: 10px;
+    background: #fff;
+    color: #666;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-prev:hover { background: #F5F6F8; }
+  .btn-next {
+    flex: 1;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: #C9A84C;
+    color: #0A1628;
+    font-size: 14px; font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-next:hover { background: #D4B55F; }
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    border: none;
+    background: #0A1628;
+    color: #C9A84C;
+    font-size: 15px; font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #142038; }
+  .btn-submit:disabled { background: #AAA; color: #fff; cursor: not-allowed; }
+
+  /* ===== SUCCESS ===== */
+  .success-wrap {
+    display: none;
+    text-align: center;
+    padding: 48px 16px;
+  }
+  .suc-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #EAF3DE;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+  }
+  .success-wrap h2 {
+    font-size: 20px; font-weight: 800;
+    color: #0A1628; margin-bottom: 12px;
+  }
+  .success-wrap p {
+    font-size: 14px; color: #666;
+    line-height: 1.8;
+  }
+  .success-wrap .sub-note {
+    margin-top: 20px;
+    font-size: 12px; color: #AAA;
+  }
+
+  /* ===== FOOTER NOTE ===== */
+  .footer-note {
+    margin-top: 20px;
+    font-size: 11px; color: #BEC2CC;
+    text-align: center; line-height: 1.7;
+  }
+
+  /* ===== LOADING OVERLAY ===== */
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 999;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 14px;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid #EAECF0;
+    border-top-color: #C9A84C;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p { font-size: 14px; color: #888; font-weight: 500; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: #E24B4A; color: #fff;
+    font-size: 13px; font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 100px;
+    opacity: 0; transition: opacity 0.3s;
+    z-index: 1000; white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p>견적 신청 중...</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="form-header">
+      <p class="brand-tag">Only Car Talk</p>
+      <h1>내 차 <span>만들기</span></h1>
+      <p>원하는 차량과 조건을 선택하면<br>맞춤 견적을 보내드려요</p>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress" id="prog">
+      <div class="ps">
+        <div class="pd act" id="pd1">1</div>
+        <div class="pl" id="pl1"></div>
+        <div class="plb act" id="plb1">차량선택</div>
+      </div>
+      <div class="ps">
+        <div class="pd" id="pd2">2</div>
+        <div class="pl" id="pl2"></div>
+        <div class="plb" id="plb2">계약조건</div>
+      </div>
+      <div class="ps">
+        <div class="pd" id="pd3">3</div>
+        <div class="pl" id="pl3"></div>
+        <div class="plb" id="plb3">신용정보</div>
+      </div>
+      <div class="ps">
+        <div class="pd" id="pd4">4</div>
+        <div class="pl" style="display:none"></div>
+        <div class="plb" id="plb4">견적받기</div>
+      </div>
+    </div>
+
+    <!-- FORM WRAP -->
+    <div id="form-wrap">
+
+      <!-- ===== STEP 1 : 차량 선택 ===== -->
+      <div class="step act" id="s1">
+        <p class="sec-eyebrow">Step 1</p>
+        <p class="sec-title">어떤 차를 원하시나요?</p>
+        <p class="sec-desc">제조사부터 순서대로 선택해 주세요</p>
+
+        <div class="frow">
+          <span class="flabel">제조사</span>
+          <div class="chips" id="brand-grp"></div>
+        </div>
+
+        <div class="frow" id="model-wrap" style="display:none">
+          <span class="flabel">차종</span>
+          <div class="sub-chips" id="model-grp"></div>
+        </div>
+
+        <div class="frow" id="trim-wrap" style="display:none">
+          <span class="flabel">트림</span>
+          <div class="sub-chips" id="trim-grp"></div>
+        </div>
+
+        <div class="frow" id="opt-wrap" style="display:none">
+          <span class="flabel">주요 옵션 <span style="font-weight:400;color:#AAA">(복수 선택 가능)</span></span>
+          <div class="sub-chips" id="opt-grp"></div>
+        </div>
+
+        <div id="price-wrap" style="display:none">
+          <div class="price-card">
+            <div>
+              <div style="font-size:11px;color:#888;margin-bottom:4px">예상 차량가</div>
+              <div class="price-main" id="price-disp">-<small>만원</small></div>
+            </div>
+            <div class="price-note">엑셀 데이터 기준<br>실제 견적과 다를 수 있어요</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-next" onclick="goStep(2)">다음 → 계약 조건</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 2 : 계약 조건 ===== -->
+      <div class="step" id="s2">
+        <p class="sec-eyebrow">Step 2</p>
+        <p class="sec-title">계약 조건을 설정해 주세요</p>
+        <p class="sec-desc">원하시는 조건을 버튼으로 선택해 주세요</p>
+
+        <div class="cond-grid">
+          <div class="frow">
+            <span class="flabel">선납금</span>
+            <div class="chips" id="prepay-grp" style="gap:6px">
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'prepay-grp')">0%</div>
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'prepay-grp')">10%</div>
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'prepay-grp')">20%</div>
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'prepay-grp')">30%</div>
+            </div>
+          </div>
+          <div class="frow">
+            <span class="flabel">보증금</span>
+            <div class="chips" id="deposit-grp" style="gap:6px">
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'deposit-grp')">0%</div>
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'deposit-grp')">10%</div>
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'deposit-grp')">20%</div>
+              <div class="chip" style="padding:9px 14px" onclick="selOne(this,'deposit-grp')">30%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">계약 기간</span>
+          <div class="chips" id="period-grp">
+            <div class="chip" onclick="selOne(this,'period-grp')">1년</div>
+            <div class="chip" onclick="selOne(this,'period-grp')">2년</div>
+            <div class="chip" onclick="selOne(this,'period-grp')">3년</div>
+            <div class="chip" onclick="selOne(this,'period-grp')">4년</div>
+            <div class="chip" onclick="selOne(this,'period-grp')">5년</div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">연간 주행거리</span>
+          <div class="chips" id="km-grp">
+            <div class="chip" onclick="selOne(this,'km-grp')">1만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">1.5만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">2만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">3만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">3만km 초과</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-prev" onclick="goStep(1)">← 이전</button>
+          <button class="btn-next" onclick="goStep(3)">다음 → 신용정보</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 3 : 신용정보 ===== -->
+      <div class="step" id="s3">
+        <p class="sec-eyebrow">Step 3</p>
+        <p class="sec-title">신용 정보를 알려주세요</p>
+        <p class="sec-desc">정확한 점수를 몰라도 괜찮아요.<br>대략적인 범위만 선택해 주시면 됩니다.</p>
+
+        <div class="credit-grid" id="credit-grp">
+          <div class="credit-card" onclick="selCredit(this)">
+            <div class="ct">900점 이상</div>
+            <div class="cs">신용 최우수</div>
+          </div>
+          <div class="credit-card" onclick="selCredit(this)">
+            <div class="ct">700 ~ 899점</div>
+            <div class="cs">신용 양호</div>
+          </div>
+          <div class="credit-card" onclick="selCredit(this)">
+            <div class="ct">699점 이하</div>
+            <div class="cs">신용 주의</div>
+          </div>
+          <div class="credit-card" onclick="selCredit(this)">
+            <div class="ct">무심사 진행</div>
+            <div class="cs">심사 없이 진행 희망</div>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:28px">
+          <button class="btn-prev" onclick="goStep(2)">← 이전</button>
+          <button class="btn-next" onclick="goStep(4)">다음 → 견적받기</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 4 : 견적받기 ===== -->
+      <div class="step" id="s4">
+        <p class="sec-eyebrow">Step 4</p>
+        <p class="sec-title">어떻게 견적을 받으시겠어요?</p>
+        <p class="sec-desc">연락처 하나만 입력하면 끝이에요</p>
+
+        <div class="noti-row" id="noti-grp">
+          <div class="noti-btn" onclick="selNoti(this,'sms')">
+            <span class="noti-icon">💬</span>
+            <span class="noti-label">문자메시지</span>
+          </div>
+          <div class="noti-btn" onclick="selNoti(this,'kakao')">
+            <span class="noti-icon">💛</span>
+            <span class="noti-label">카카오톡</span>
+          </div>
+          <div class="noti-btn" onclick="selNoti(this,'email')">
+            <span class="noti-icon">📧</span>
+            <span class="noti-label">이메일</span>
+          </div>
+        </div>
+
+        <div class="contact-reveal" id="contact-reveal" style="display:none">
+          <div id="sms-field" style="display:none">
+            <label class="flabel">휴대폰 번호</label>
+            <input class="input-field" type="tel" id="inp-phone"
+              placeholder="010-0000-0000" oninput="fmtPhone(this)" maxlength="13">
+          </div>
+          <div id="kakao-field" style="display:none">
+            <label class="flabel">카카오톡 아이디</label>
+            <input class="input-field" type="text" id="inp-kakao"
+              placeholder="카카오톡 아이디 입력">
+          </div>
+          <div id="email-field" style="display:none">
+            <label class="flabel">이메일 주소</label>
+            <input class="input-field" type="email" id="inp-email"
+              placeholder="example@email.com">
+          </div>
+          <p class="contact-hint">
+            입력하신 정보는 견적 발송 목적으로만 사용됩니다.<br>
+            계약을 원하실 때만 유선 연락이 이루어집니다.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <p style="font-size:12px;color:#AAA;font-weight:600;margin-bottom:12px">신청 내용 확인</p>
+        <div class="summary-card">
+          <div class="sum-row">
+            <span class="sum-key">차량</span>
+            <span class="sum-val" id="sum-car">-</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-key">선납금 / 보증금</span>
+            <span class="sum-val" id="sum-cond">-</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-key">계약기간 / 주행거리</span>
+            <span class="sum-val" id="sum-term">-</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-key">신용정보</span>
+            <span class="sum-val" id="sum-credit">-</span>
+          </div>
+          <div class="sum-row">
+            <span class="sum-key">옵션</span>
+            <span class="sum-val" id="sum-opts">-</span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-prev" onclick="goStep(3)">← 이전</button>
+        </div>
+        <button class="btn-submit" id="submit-btn" onclick="submitForm()">
+          견적 신청 완료 →
+        </button>
+      </div>
+
+    </div><!-- /form-wrap -->
+
+    <!-- SUCCESS -->
+    <div class="success-wrap" id="success">
+      <div class="suc-icon">✅</div>
+      <h2>견적 신청이 완료됐어요!</h2>
+      <p>
+        선택하신 방법으로<br>
+        <strong>영업일 기준 1일 이내</strong>에 맞춤 견적을 보내드릴게요.<br><br>
+        계약을 원하실 때만 연락 주시면 됩니다. 😊
+      </p>
+      <p class="sub-note">OnlyCartalk · 리스 &amp; 렌탈 전문 중개</p>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="footer-note">
+    입력하신 정보는 견적 발송 목적 외에 사용되지 않습니다.<br>
+    © 2025 OnlyCartalk. All rights reserved.
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+/* ================================================
+   EmailJS 설정 완료
+   ================================================ */
+const EMAILJS_PUBLIC_KEY  = "5-wSho3g1I9sELOfE";
+const EMAILJS_SERVICE_ID  = "service_387x2ka";
+const EMAILJS_TEMPLATE_ID = "template_gd18ywl";
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+/* ================================================
+   ★ 차량 데이터
+   엑셀을 받으면 이 객체를 실제 데이터로 교체합니다.
+   구조: { 제조사: { models: { 차종: { trims:[], opts:[], base:숫자 } } } }
+   base = 기본 차량가 (만원 단위)
+   ================================================ */
+const CAR_DATA = {
+  "현대": {
+    models: {
+      "아이오닉6":  { trims:["스탠다드","롱레인지 2WD","롱레인지 AWD"],        opts:["파노라믹선루프","HUD","빌트인캠","디지털사이드미러"], base:5200 },
+      "아이오닉5":  { trims:["스탠다드","롱레인지 2WD","롱레인지 AWD"],        opts:["파노라믹선루프","HUD","빌트인캠"],               base:5500 },
+      "투싼":       { trims:["스마트","프리미엄","인스퍼레이션"],               opts:["파노라믹선루프","통풍시트","HUD"],               base:3100 },
+      "팰리세이드":  { trims:["익스클루시브","프레스티지"],                      opts:["파노라믹선루프","빌트인캠","HUD","통풍시트"],    base:4500 },
+      "싼타페":     { trims:["스마트","프리미엄","캘리그래피"],                  opts:["파노라믹선루프","HUD","통풍시트"],               base:3800 }
+    }
+  },
+  "기아": {
+    models: {
+      "EV6":    { trims:["에어 2WD","어스 2WD","GT-라인 AWD"],             opts:["파노라믹선루프","HUD","빌트인캠"],            base:5200 },
+      "EV9":    { trims:["에어","어스","GT-라인"],                          opts:["파노라믹선루프","HUD","7인승","통풍시트"],    base:7200 },
+      "스포티지": { trims:["트렌디","프레스티지","시그니처"],                  opts:["파노라믹선루프","HUD","통풍시트"],            base:3000 },
+      "카니발":   { trims:["프레스티지","노블레스","시그니처"],                 opts:["파노라믹선루프","빌트인캠","통풍시트"],       base:4200 },
+      "K8":     { trims:["트렌디","프레스티지","노블레스"],                   opts:["파노라믹선루프","HUD","마사지시트"],          base:4000 }
+    }
+  },
+  "제네시스": {
+    models: {
+      "G80":  { trims:["2.5T 스탠다드","3.5T 스탠다드","전동화"],           opts:["파노라믹선루프","HUD","빌트인캠","마사지시트"], base:6800 },
+      "GV80": { trims:["2.5T 2WD","3.5T AWD"],                           opts:["파노라믹선루프","HUD","빌트인캠","마사지시트"], base:7500 },
+      "G90":  { trims:["3.5T 스탠다드","3.5T 롱휠베이스"],                  opts:["파노라믹선루프","HUD","마사지시트"],           base:11500 },
+      "GV70": { trims:["2.5T 스탠다드","3.5T AWD","전동화"],               opts:["파노라믹선루프","HUD","마사지시트"],           base:5900 }
+    }
+  },
+  "BMW": {
+    models: {
+      "3시리즈": { trims:["320i","330i","M340i"],      opts:["파노라마선루프","HUD","M스포츠패키지","파킹어시스턴트"], base:6200 },
+      "5시리즈": { trims:["520i","530i","540i"],       opts:["파노라마선루프","HUD","이그제큐티브패키지","M스포츠패키지"], base:8100 },
+      "X5":     { trims:["xDrive 40i","M60i"],        opts:["파노라마선루프","HUD","7인승","스카이라운지"],            base:10500 },
+      "iX":     { trims:["xDrive40","xDrive50","M60"],opts:["파노라마선루프","HUD","Bowers&Wilkins"],                 base:11000 }
+    }
+  },
+  "벤츠": {
+    models: {
+      "C클래스": { trims:["C200","C300","AMG C43"],    opts:["파노라믹선루프","부메스터사운드","AMG라인","HUD"],     base:6900 },
+      "E클래스": { trims:["E200","E300","AMG E53"],    opts:["파노라믹선루프","부메스터사운드","AMG라인","마사지시트"], base:8900 },
+      "GLE":    { trims:["GLE 300d","GLE 400d"],      opts:["파노라믹선루프","부메스터사운드","AMG라인","마사지시트"], base:11200 },
+      "EQS":    { trims:["EQS 450+","EQS 580 4MATIC"],opts:["파노라믹선루프","HUD","마사지시트","부메스터사운드"],   base:16000 }
+    }
+  },
+  "아우디": {
+    models: {
+      "A6":        { trims:["45 TFSI","55 TFSI"],           opts:["파노라마선루프","Bang&Olufsen","S라인","마사지시트"], base:7800 },
+      "Q5":        { trims:["45 TFSI","55 TFSI e"],         opts:["파노라마선루프","Bang&Olufsen","S라인"],            base:7200 },
+      "e-tron GT": { trims:["e-tron GT","RS e-tron GT"],    opts:["Bang&Olufsen","카본패키지","RS디자인"],             base:12000 },
+      "Q8 e-tron": { trims:["55 quattro","SQ8"],            opts:["파노라마선루프","Bang&Olufsen","S라인"],            base:11500 }
+    }
+  },
+  "볼보": {
+    models: {
+      "XC60": { trims:["B5 AWD","Recharge T8"],       opts:["파노라마선루프","바워스&윌킨스","에어서스펜션"],        base:7100 },
+      "XC90": { trims:["B6 AWD","Recharge T8"],       opts:["파노라마선루프","바워스&윌킨스","에어서스펜션","7인승"],base:9800 },
+      "EX90": { trims:["Twin Motor","Twin Motor Performance"], opts:["파노라마선루프","바워스&윌킨스","7인승"],       base:11200 }
+    }
+  },
+  "테슬라": {
+    models: {
+      "Model 3": { trims:["스탠다드 RWD","롱레인지 AWD","퍼포먼스"], opts:["엔핸스드 오토파일럿","풀셀프드라이빙","화이트인테리어"], base:5900 },
+      "Model Y": { trims:["롱레인지 AWD","퍼포먼스"],               opts:["엔핸스드 오토파일럿","풀셀프드라이빙","화이트인테리어","7인승"], base:6800 },
+      "Model S": { trims:["듀얼모터","플래드"],                      opts:["엔핸스드 오토파일럿","풀셀프드라이빙","요크핸들"],       base:12900 }
+    }
+  },
+  "기타": {
+    models: {
+      "직접기재": { trims:["상담 시 안내"], opts:[], base:0 }
+    }
+  }
+};
+
+/* ================================================
+   STATE
+   ================================================ */
+const state = {
+  brand:"", model:"", trim:"", opts:[],
+  prepay:"", deposit:"", period:"", km:"",
+  credit:"", notiType:"", contact:""
+};
+
+/* ================================================
+   STEP 1 — 차량 선택
+   ================================================ */
+(function initBrands(){
+  const grp = document.getElementById("brand-grp");
+  Object.keys(CAR_DATA).forEach(b => {
+    const d = document.createElement("div");
+    d.className = "chip";
+    d.textContent = b;
+    d.onclick = () => selBrand(d, b);
+    grp.appendChild(d);
+  });
+})();
+
+function selBrand(el, brand) {
+  document.querySelectorAll("#brand-grp .chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state.brand = brand;
+  state.model = ""; state.trim = ""; state.opts = [];
+
+  const mg = document.getElementById("model-grp");
+  mg.innerHTML = "";
+  Object.keys(CAR_DATA[brand].models).forEach(m => {
+    const d = document.createElement("div");
+    d.className = "sub-chip";
+    d.textContent = m;
+    d.onclick = () => selModel(d, m);
+    mg.appendChild(d);
+  });
+  document.getElementById("model-wrap").style.display = "block";
+  document.getElementById("trim-wrap").style.display  = "none";
+  document.getElementById("opt-wrap").style.display   = "none";
+  document.getElementById("price-wrap").style.display = "none";
+}
+
+function selModel(el, model) {
+  document.querySelectorAll("#model-grp .sub-chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state.model = model;
+  state.trim = ""; state.opts = [];
+
+  const data = CAR_DATA[state.brand].models[model];
+  const tg = document.getElementById("trim-grp");
+  tg.innerHTML = "";
+  data.trims.forEach(t => {
+    const d = document.createElement("div");
+    d.className = "sub-chip";
+    d.textContent = t;
+    d.onclick = () => selTrim(d, t);
+    tg.appendChild(d);
+  });
+  document.getElementById("trim-wrap").style.display  = "block";
+  document.getElementById("opt-wrap").style.display   = "none";
+  document.getElementById("price-wrap").style.display = "none";
+}
+
+function selTrim(el, trim) {
+  document.querySelectorAll("#trim-grp .sub-chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state.trim = trim;
+  state.opts = [];
+
+  const data = CAR_DATA[state.brand].models[state.model];
+  if (data.opts.length > 0) {
+    const og = document.getElementById("opt-grp");
+    og.innerHTML = "";
+    data.opts.forEach(o => {
+      const d = document.createElement("div");
+      d.className = "sub-chip";
+      d.textContent = o;
+      d.onclick = () => toggleOpt(d, o);
+      og.appendChild(d);
+    });
+    document.getElementById("opt-wrap").style.display = "block";
+  } else {
+    document.getElementById("opt-wrap").style.display = "none";
+  }
+  updatePrice();
+}
+
+function toggleOpt(el, opt) {
+  el.classList.toggle("sel");
+  if (el.classList.contains("sel")) { state.opts.push(opt); }
+  else { state.opts = state.opts.filter(o => o !== opt); }
+  updatePrice();
+}
+
+function updatePrice() {
+  const data = CAR_DATA[state.brand]?.models[state.model];
+  if (!data || !state.trim) return;
+  const idx  = data.trims.indexOf(state.trim);
+  const price = data.base + idx * 200 + state.opts.length * 50;
+  const el = document.getElementById("price-disp");
+  el.innerHTML = price.toLocaleString() + "<small>만원 ~</small>";
+  document.getElementById("price-wrap").style.display = "block";
+}
+
+/* ================================================
+   STEP 2 — 계약 조건 (단일 선택 칩)
+   ================================================ */
+function selOne(el, grpId) {
+  document.querySelectorAll("#" + grpId + " .chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  const key = { "prepay-grp":"prepay", "deposit-grp":"deposit",
+                "period-grp":"period", "km-grp":"km" }[grpId];
+  if (key) state[key] = el.textContent.trim();
+}
+
+/* ================================================
+   STEP 3 — 신용정보
+   ================================================ */
+function selCredit(el) {
+  document.querySelectorAll("#credit-grp .credit-card").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state.credit = el.querySelector(".ct").textContent.trim();
+}
+
+/* ================================================
+   STEP 4 — 견적 수신 방법
+   ================================================ */
+function selNoti(el, type) {
+  document.querySelectorAll("#noti-grp .noti-btn").forEach(b => b.classList.remove("sel"));
+  el.classList.add("sel");
+  state.notiType = type;
+  ["sms-field","kakao-field","email-field"].forEach(id =>
+    document.getElementById(id).style.display = "none"
+  );
+  const map = { sms:"sms-field", kakao:"kakao-field", email:"email-field" };
+  document.getElementById(map[type]).style.display = "block";
+  document.getElementById("contact-reveal").style.display = "block";
+}
+
+function fmtPhone(el) {
+  let v = el.value.replace(/\D/g, "");
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 7) v = v.slice(0,3) + "-" + v.slice(3,7) + "-" + v.slice(7);
+  else if (v.length > 3) v = v.slice(0,3) + "-" + v.slice(3);
+  el.value = v;
+}
+
+/* ================================================
+   PROGRESS
+   ================================================ */
+function goStep(n) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("act"));
+  document.getElementById("s" + n).classList.add("act");
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById("pd" + i);
+    const lbl = document.getElementById("plb" + i);
+    dot.classList.remove("act", "done");
+    lbl.classList.remove("act");
+    if      (i < n) { dot.classList.add("done"); dot.innerHTML = "✓"; }
+    else if (i === n){ dot.classList.add("act");  dot.textContent = i; lbl.classList.add("act"); }
+    else             { dot.textContent = i; }
+    if (i < 4) {
+      const pl = document.getElementById("pl" + i);
+      if (pl) pl.classList.toggle("done", i < n);
+    }
+  }
+  if (n === 4) buildSummary();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ================================================
+   SUMMARY
+   ================================================ */
+function getChipVal(grpId) {
+  return document.querySelector("#" + grpId + " .chip.sel")?.textContent.trim() || "-";
+}
+function buildSummary() {
+  const brand  = document.querySelector("#brand-grp .chip.sel")?.textContent || "-";
+  const model  = document.querySelector("#model-grp .sub-chip.sel")?.textContent || "-";
+  const trim   = document.querySelector("#trim-grp .sub-chip.sel")?.textContent || "-";
+  document.getElementById("sum-car").textContent    = brand + " " + model + " " + trim;
+  document.getElementById("sum-cond").textContent   = "선납 " + (state.prepay||"-") + " / 보증 " + (state.deposit||"-");
+  document.getElementById("sum-term").textContent   = (state.period||"-") + " / " + (state.km||"-");
+  document.getElementById("sum-credit").textContent = state.credit || "-";
+  document.getElementById("sum-opts").textContent   = state.opts.length ? state.opts.join(", ") : "없음";
+}
+
+/* ================================================
+   CONTACT GETTER
+   ================================================ */
+function getContact() {
+  const map = { sms: "inp-phone", kakao: "inp-kakao", email: "inp-email" };
+  const id  = map[state.notiType];
+  return id ? document.getElementById(id)?.value.trim() : "";
+}
+function getContactLabel() {
+  const map = { sms:"문자메시지", kakao:"카카오톡", email:"이메일" };
+  return map[state.notiType] || "-";
+}
+
+/* ================================================
+   VALIDATION
+   ================================================ */
+function validate() {
+  if (!state.brand || !state.model || !state.trim) {
+    showToast("차량 정보를 모두 선택해 주세요");  goStep(1); return false;
+  }
+  if (!state.prepay || !state.deposit || !state.period || !state.km) {
+    showToast("계약 조건을 모두 선택해 주세요");  goStep(2); return false;
+  }
+  if (!state.credit) {
+    showToast("신용정보를 선택해 주세요");         goStep(3); return false;
+  }
+  if (!state.notiType) {
+    showToast("견적 수신 방법을 선택해 주세요");   return false;
+  }
+  const contact = getContact();
+  if (!contact) {
+    showToast("연락처를 입력해 주세요");           return false;
+  }
+  if (state.notiType === "sms" && !/^010-\d{4}-\d{4}$/.test(contact)) {
+    showToast("올바른 휴대폰 번호를 입력해 주세요"); return false;
+  }
+  if (state.notiType === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) {
+    showToast("올바른 이메일 주소를 입력해 주세요"); return false;
+  }
+  return true;
+}
+
+/* ================================================
+   SUBMIT — EmailJS 전송
+   ================================================ */
+async function submitForm() {
+  if (!validate()) return;
+
+  const contact = getContact();
+  const price   = document.getElementById("price-disp")?.textContent || "-";
+  const now     = new Date().toLocaleString("ko-KR", { timeZone:"Asia/Seoul" });
+
+  /* EmailJS 템플릿 변수 — 템플릿에서 {{변수명}} 으로 사용 */
+  const params = {
+    submit_time:    now,
+    brand:          state.brand,
+    model:          state.model,
+    trim:           state.trim,
+    options:        state.opts.length ? state.opts.join(", ") : "없음",
+    estimated_price: price,
+    prepay:         state.prepay,
+    deposit:        state.deposit,
+    period:         state.period,
+    km:             state.km,
+    credit:         state.credit,
+    noti_method:    getContactLabel(),
+    contact:        contact
+  };
+
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  document.getElementById("loading").classList.add("show");
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    document.getElementById("loading").classList.remove("show");
+    document.getElementById("form-wrap").style.display = "none";
+    document.getElementById("prog").style.display      = "none";
+    document.getElementById("success").style.display   = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    document.getElementById("loading").classList.remove("show");
+    btn.disabled = false;
+    showToast("전송 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    console.error("EmailJS error:", err);
+  }
+}
+
+/* ================================================
+   TOAST
+   ================================================ */
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+</script>
+</body>
+</html>
