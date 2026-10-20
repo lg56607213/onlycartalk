@@ -187,9 +187,14 @@
     <!-- ===== STEP 1 : 차량 ===== -->
     <section class="card" data-step="1">
       <h2>어떤 차량을 알아보세요?</h2>
-      <p class="hint">현대자동차 실제 출고가 기준입니다. 다른 브랜드는 아래 요청사항에 적어주세요.</p>
+      <p class="hint">현대 · 기아 실제 출고가 기준입니다. 다른 브랜드는 아래 요청사항에 적어주세요.</p>
 
       <div class="field">
+        <label class="lb">제조사<span class="req">*</span></label>
+        <div class="chips" id="maker-grp"></div>
+      </div>
+
+      <div class="field hidden" id="cat-field">
         <label class="lb">구분<span class="req">*</span></label>
         <div class="chips" id="cat-grp"></div>
       </div>
@@ -348,7 +353,7 @@ emailjs.init(EMAILJS_PUBLIC_KEY);
    ================================================ */
 const state = {
   step: 1,
-  cat: null, model: null, variant: null, trim: null,
+  maker: null, cat: null, model: null, variant: null, trim: null,
   opts: [],
   bizType: null, period: null, prepay: null, deposit: null, km: null, care: null,
 };
@@ -356,13 +361,15 @@ const state = {
 const won = (n) => Number(n).toLocaleString("ko-KR");
 const $ = (id) => document.getElementById(id);
 
+/* 선택한 제조사 · 구분 · 차종에 해당하는 트림 */
+const inModel = (t) => t.k === state.maker && t.c === state.cat && t.m === state.model;
+
 /* 세부 사양이 없는 차종은 variant 가 null 이다 (엑셀 병합 셀 구조에서 비어 있던 칸) */
-const hasVariant = () =>
-  CAR_DATA.trims.some((t) => t.c === state.cat && t.m === state.model && t.v);
+const hasVariant = () => CAR_DATA.trims.some((t) => inModel(t) && t.v);
 
 const currentTrim = () =>
   CAR_DATA.trims.find((t) =>
-    t.c === state.cat && t.m === state.model &&
+    inModel(t) &&
     (t.v || null) === (state.variant || null) && t.t === state.trim);
 
 const optTotal = () => state.opts.reduce((a, o) => a + o.p, 0);
@@ -387,8 +394,19 @@ function chips(hostId, items, selected, onPick) {
   });
 }
 
+function renderMakers() {
+  chips("maker-grp", CAR_DATA.makers, state.maker, (v) => {
+    state.maker = v; state.cat = null; state.model = null; state.variant = null; state.trim = null; state.opts = [];
+    renderMakers(); renderCategories(); renderModels(); renderVariants(); renderTrims(); refresh();
+  });
+}
+
 function renderCategories() {
-  chips("cat-grp", CAR_DATA.categories, state.cat, (v) => {
+  const field = $("cat-field");
+  if (!state.maker) { field.classList.add("hidden"); return; }
+  field.classList.remove("hidden");
+  const cats = [...new Set(CAR_DATA.trims.filter((t) => t.k === state.maker).map((t) => t.c))];
+  chips("cat-grp", cats, state.cat, (v) => {
     state.cat = v; state.model = null; state.variant = null; state.trim = null; state.opts = [];
     renderCategories(); renderModels(); refresh();
   });
@@ -398,7 +416,8 @@ function renderModels() {
   const field = $("model-field");
   if (!state.cat) { field.classList.add("hidden"); return; }
   field.classList.remove("hidden");
-  const models = [...new Set(CAR_DATA.trims.filter((t) => t.c === state.cat).map((t) => t.m))];
+  const models = [...new Set(CAR_DATA.trims
+    .filter((t) => t.k === state.maker && t.c === state.cat).map((t) => t.m))];
   chips("model-grp", models, state.model, (v) => {
     state.model = v; state.variant = null; state.trim = null; state.opts = [];
     renderModels(); renderVariants(); renderTrims(); refresh();
@@ -411,7 +430,7 @@ function renderVariants() {
   if (!state.model || !hasVariant()) { field.classList.add("hidden"); return; }
   field.classList.remove("hidden");
   const vs = [...new Set(CAR_DATA.trims
-    .filter((t) => t.c === state.cat && t.m === state.model && t.v).map((t) => t.v))];
+    .filter((t) => inModel(t) && t.v).map((t) => t.v))];
   chips("variant-grp", vs, state.variant, (v) => {
     state.variant = v; state.trim = null; state.opts = [];
     renderVariants(); renderTrims(); refresh();
@@ -425,7 +444,7 @@ function renderTrims() {
   field.classList.remove("hidden");
 
   const list = CAR_DATA.trims.filter((t) =>
-    t.c === state.cat && t.m === state.model && (t.v || null) === (state.variant || null));
+    inModel(t) && (t.v || null) === (state.variant || null));
 
   const host = $("trim-grp");
   host.innerHTML = "";
@@ -498,7 +517,7 @@ function renderConditions() {
 function renderFinalSum() {
   const t = currentTrim();
   if (!t) return;
-  const car = [state.model, state.variant, state.trim].filter(Boolean).join(" / ");
+  const car = [state.maker, state.model, state.variant, state.trim].filter(Boolean).join(" / ");
   const rows = [
     ["차량", car],
     ["선택 옵션", state.opts.length ? state.opts.length + "개" : "없음"],
@@ -603,8 +622,8 @@ async function submit() {
   const params = {
     submit_time:      new Date().toLocaleString("ko-KR"),
     site:             "OnlyCartalk",
-    category:         state.cat,
-    car_full:         [state.model, state.variant, state.trim].filter(Boolean).join(" / "),
+    category:         state.maker + " " + state.cat,
+    car_full:         [state.maker + " " + state.model, state.variant, state.trim].filter(Boolean).join(" / "),
     base_price:       won(t.p) + "원",
     factory_options:  state.opts.length ? state.opts.map((o) => o.n + "(+" + won(o.p) + "원)").join(", ") : "없음",
     option_price:     optTotal() ? won(optTotal()) + "원" : "0원",
@@ -651,7 +670,7 @@ function showToast(msg) {
 /* ================================================
    시작
    ================================================ */
-renderCategories();
+renderMakers();
 refresh();
 </script>
 </body>
