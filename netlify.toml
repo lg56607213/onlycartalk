@@ -8,3 +8,20 @@
 [build]
   publish = "site"
   command = ""
+
+# 예전 주소 호환 — 개편 전 페이지로 들어오면 새 페이지로 보낸다
+[[redirects]]
+  from = "/services.html"
+  to = "/products.html"
+  status = 301
+
+[[redirects]]
+  from = "/about.html"
+  to = "/"
+  status = 301
+
+# 광고용 짧은 주소
+[[redirects]]
+  from = "/q"
+  to = "/quote.html"
+  status = 301

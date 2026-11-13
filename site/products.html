@@ -3,215 +3,347 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>상품안내 — 법인 렌트 · 리스 · 할부 비교 | OnlyCartalk</title>
-<meta name="description" content="법인 렌트, 법인 리스, 할부의 차이를 표로 비교합니다. 보유 기간과 주행거리, 자산 처리 방식에 따라 유리한 선택이 달라집니다.">
+<title>상품안내 | 온니카톡</title>
+<meta name="description" content="장기렌트 · 리스 · 할부의 차이를 한눈에 비교합니다. 차량 명의, 번호판, 보험, 만기 처리와 선납금 · 보증금 · 계약 기간 등 계약 조건을 정리했습니다.">
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="assets/style.css">
-</head>
-<body>
+<style>
+  .anchor-nav {
+    position: sticky; top: 64px; z-index: 50;
+    background: #fff; border-bottom: 1px solid #E5E8EE;
+  }
+  .anchor-nav .in { display: flex; gap: 4px; overflow-x: auto; padding: 11px 20px; }
+  .anchor-nav a {
+    padding: 8px 15px; border-radius: 100px; white-space: nowrap;
+    font-size: 13.5px; font-weight: 700; color: #6B7280;
+    border: 1px solid #E5E8EE; transition: .15s;
+  }
+  .anchor-nav a:hover { border-color: #191919; color: #191919; }
 
-<header class="hd">
-  <div class="wrap hd-in">
-    <a class="logo" href="index.html">ONLY<span>CARTALK</span></a>
-    <button class="burger" aria-label="메뉴 열기" aria-expanded="false">☰</button>
-    <nav class="nav">
+  .pblock { scroll-margin-top: 130px; }
+  .pblock + .pblock { margin-top: 60px; padding-top: 58px; border-top: 1px solid #E5E8EE; }
+  .pblock-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+  .pblock-head .badge {
+    position: static; padding: 6px 13px; border-radius: 100px; background: #191919; color: #FEE500;
+    font-size: 12px; font-weight: 800;
+  }
+  .pblock-head h2 { font-size: 26px; font-weight: 800; color: #191919; letter-spacing: -.02em; }
+  .pblock > .desc {
+    font-size: 15px; color: #4B5563; line-height: 1.95;
+    margin-bottom: 26px; max-width: 780px; word-break: keep-all;
+  }
+  @media (max-width: 600px) { .pblock-head h2 { font-size: 21px; } }
+
+  .pcols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .pcols { grid-template-columns: 1fr; } }
+  .pbox { border: 1px solid #E5E8EE; border-radius: 14px; padding: 24px 22px; background: #fff; }
+  .pbox.good { border-color: #EBDD7A; background: #FFFDF0; }
+  .pbox h4 { font-size: 15px; font-weight: 800; color: #191919; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+  ul.dot li::before { background: #191919; }
+
+  .note {
+    margin-top: 22px; padding: 17px 20px; border-radius: 11px;
+    background: #F5F6F8; border-left: 3px solid #FEE500;
+    font-size: 13.5px; color: #4B5563; line-height: 1.85; word-break: keep-all;
+  }
+  .note b { color: #191919; }
+  table.t td.y { color: #1F7A4D; font-weight: 700; }
+  .sec-head { text-align: left; }
+</style>
+</head>
+<body class="has-bar">
+
+<header class="site-header">
+  <div class="wrap hd">
+    <a class="logo" href="index.html"><img src="assets/logo-mark.svg" alt="" width="30" height="30"><b>온니<i>카톡</i></b></a>
+    <button class="burger" type="button" aria-label="메뉴" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="gnb">
+      <a href="index.html#picker">차량 보기</a>
       <a href="products.html">상품안내</a>
-      <a href="services.html">법인 서비스</a>
-      <a href="about.html">회사소개</a>
-      <a class="hd-cta" href="quote.html">견적 신청</a>
+      <a href="index.html#how">이용 방법</a>
+      <a class="hd-cta" href="quote.html">카톡 견적 받기</a>
     </nav>
   </div>
 </header>
 
-<div class="hero" style="padding:56px 0 50px">
+<div class="page-head">
   <div class="wrap">
-    <p class="eyebrow">상품안내</p>
-    <h1 style="font-size:34px">렌트 · 리스 · 할부<br>무엇이 유리한가</h1>
-    <p>정답이 하나로 정해져 있지 않습니다. 회사 상황에 따라 갈립니다.</p>
+    <h1>상품안내</h1>
+    <p>장기렌트 · 리스 · 할부,<br>무엇이 어떻게 다른지 정리했습니다</p>
   </div>
 </div>
 
+<nav class="anchor-nav" aria-label="상품안내 바로가기">
+  <div class="wrap in">
+    <a href="#compare">한눈에 비교</a>
+    <a href="#rent">장기렌트</a>
+    <a href="#lease">리스</a>
+    <a href="#installment">할부</a>
+    <a href="#terms">계약 조건</a>
+  </div>
+</nav>
+
 <!-- ===== 비교표 ===== -->
-<section>
+<section class="sec" id="compare" style="scroll-margin-top:130px">
   <div class="wrap">
     <div class="sec-head">
-      <span class="tag">한눈에 비교</span>
-      <h2>세 가지 방식의 차이</h2>
-      <p>세부 조건은 금융사와 심사 결과에 따라 달라집니다. 아래는 일반적인 구조를 정리한 것입니다.</p>
+      <h2>한눈에 비교하기</h2>
+      <p>가장 큰 차이는 <b>차량 명의를 누가 갖는가</b>와 <b>보험 · 세금을 누가 챙기는가</b>입니다.</p>
     </div>
 
-    <div class="table-scroll">
-      <table>
+    <div class="tbl-scroll">
+      <table class="t">
         <thead>
-          <tr>
-            <th>구분</th>
-            <th>법인 렌트</th>
-            <th>법인 리스</th>
-            <th>할부</th>
-          </tr>
+          <tr><th style="width:132px">구분</th><th>장기렌트</th><th>리스</th><th>할부</th></tr>
         </thead>
         <tbody>
+          <tr><th>차량 명의</th><td class="c">렌트사</td><td class="c">리스사</td><td class="c hl">고객 본인</td></tr>
+          <tr><th>번호판</th><td class="c">하 · 허 · 호</td><td class="c">일반 번호판</td><td class="c">일반 번호판</td></tr>
+          <tr><th>자동차 보험</th><td class="y">월 대여료에 포함</td><td>본인 가입</td><td>본인 가입</td></tr>
+          <tr><th>자동차세</th><td class="y">월 대여료에 포함</td><td>상품에 따라 포함 또는 별도</td><td>본인 납부</td></tr>
+          <tr><th>초기 비용</th><td>선납금 · 보증금 조정 가능</td><td>선납금 · 보증금 조정 가능</td><td>선수금 + 취득세 등 등록비용</td></tr>
+          <tr><th>주행거리 약정</th><td class="c">있음</td><td class="c">있음</td><td class="c">없음</td></tr>
+          <tr><th>만기 처리</th><td>반납 또는 인수</td><td class="hl">반납 · 연장 · 인수 선택</td><td>완납 시 종료</td></tr>
+          <tr><th>중도 해지</th><td>위약금 발생</td><td>위약금 발생</td><td>잔액 일시 상환</td></tr>
+          <tr><th>이런 분께</th><td>보험 · 세금 · 관리를<br>한 번에 맡기고 싶은 분</td><td>일반 번호판으로 타면서<br>만기에 선택하고 싶은 분</td><td>차를 오래 타고<br>내 자산으로 남기실 분</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>위 표는 일반적인 구성 기준입니다.</b>
+      실제 포함 항목과 조건은 금융사 · 렌트사와 상품에 따라 다릅니다.
+      견적서에는 선택하신 차량과 조건 기준으로 정확한 내용을 담아 카톡으로 보내드립니다.
+    </div>
+  </div>
+</section>
+
+<!-- ===== 상품별 상세 ===== -->
+<section class="sec tint">
+  <div class="wrap">
+
+    <!-- 장기렌트 -->
+    <div class="pblock" id="rent">
+      <div class="pblock-head">
+        <span class="badge">01</span>
+        <h2>장기렌트</h2>
+      </div>
+      <p class="desc">
+        렌트사 명의의 신차를 계약 기간 동안 빌려 타는 방식입니다.
+        자동차 보험과 자동차세가 월 대여료에 들어 있어, 매달 내는 금액 하나로 차량 유지가 정리됩니다.
+        차량 관리에 신경 쓰고 싶지 않은 분께 맞습니다.
+      </p>
+      <div class="pcols">
+        <div class="pbox good">
+          <h4>◎ 이런 점이 좋습니다</h4>
+          <ul class="dot">
+            <li><b>보험 · 자동차세 포함</b> — 따로 가입하거나 납부할 일이 없습니다</li>
+            <li><b>초기 비용이 적습니다</b> — 취득세 등 등록 비용을 따로 내지 않습니다</li>
+            <li><b>사고가 나도 내 보험료는 그대로</b> — 렌트사 보험으로 처리하고 면책금만 부담합니다</li>
+            <li><b>정비 포함 선택 가능</b> — 소모품 교체까지 월 대여료에 묶을 수 있습니다</li>
+          </ul>
+        </div>
+        <div class="pbox">
+          <h4>△ 함께 확인하실 점</h4>
+          <ul class="dot">
+            <li>번호판이 하 · 허 · 호로 나옵니다</li>
+            <li>약정 주행거리를 초과하면 정산 비용이 발생합니다</li>
+            <li>이용 기간 동안 본인 명의의 보험 경력은 쌓이지 않습니다</li>
+            <li>중도 해지 시 위약금이 발생합니다</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 리스 -->
+    <div class="pblock" id="lease">
+      <div class="pblock-head">
+        <span class="badge">02</span>
+        <h2>리스</h2>
+      </div>
+      <p class="desc">
+        리스사가 차량을 구입하고, 고객은 매달 리스료를 내며 이용합니다.
+        일반 번호판을 달고 보험은 본인 명의로 가입합니다.
+        만기에는 반납 · 연장 · 인수 가운데 그때 상황에 맞춰 고를 수 있습니다.
+      </p>
+      <div class="pcols">
+        <div class="pbox good">
+          <h4>◎ 이런 점이 좋습니다</h4>
+          <ul class="dot">
+            <li><b>일반 번호판</b> — 렌트 번호판이 부담스러운 분께 맞습니다</li>
+            <li><b>만기 선택권</b> — 반납 · 연장 · 인수 중 선택합니다</li>
+            <li><b>보험 경력 유지</b> — 본인 명의로 가입하므로 경력이 이어집니다</li>
+            <li><b>조건 설계 폭이 넓습니다</b> — 선납금 · 보증금 · 잔존가치 조합을 조정할 수 있습니다</li>
+          </ul>
+        </div>
+        <div class="pbox">
+          <h4>△ 함께 확인하실 점</h4>
+          <ul class="dot">
+            <li>보험을 직접 가입해야 하고, 사고 시 본인 보험료가 오를 수 있습니다</li>
+            <li>약정 주행거리를 초과하면 정산 비용이 발생합니다</li>
+            <li>반납 시 차량 상태에 따라 원상복구 비용이 나올 수 있습니다</li>
+            <li>중도 해지 시 위약금이 발생합니다</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 할부 -->
+    <div class="pblock" id="installment">
+      <div class="pblock-head">
+        <span class="badge">03</span>
+        <h2>할부</h2>
+      </div>
+      <p class="desc">
+        출고 시점부터 차량이 본인 명의가 됩니다. 차량 가격에서 선수금을 뺀 금액을
+        원금과 이자로 나누어 납입하고, 완납하면 그것으로 끝입니다.
+        구조가 가장 단순하고 주행거리나 반납 조건에 묶이지 않습니다.
+      </p>
+      <div class="pcols">
+        <div class="pbox good">
+          <h4>◎ 이런 점이 좋습니다</h4>
+          <ul class="dot">
+            <li><b>처음부터 본인 명의</b> — 명의 이전 절차가 없습니다</li>
+            <li>주행거리 제한이나 반납 조건이 없습니다</li>
+            <li>완납 후 별도 정산 절차가 없어 단순합니다</li>
+            <li>차량 매각이 자유롭습니다</li>
+          </ul>
+        </div>
+        <div class="pbox">
+          <h4>△ 함께 확인하실 점</h4>
+          <ul class="dot">
+            <li>취득세 등 등록 비용을 본인이 부담합니다</li>
+            <li>보험 · 자동차세 · 정비를 모두 직접 챙겨야 합니다</li>
+            <li>차량 가격 하락(감가)을 본인이 그대로 안습니다</li>
+            <li>차량 관리와 처분을 전부 본인이 책임집니다</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>사업자 · 법인의 비용 처리는 계약 형태와 회사 상황에 따라 달라집니다.</b>
+      업무용 승용차의 손금 인정 범위와 부가세 처리는 담당 세무사와 확인하시는 것이 정확합니다.
+      온니카톡은 계약 구조와 비용을 비교해 드립니다.
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 계약 조건 ===== -->
+<section class="sec" id="terms" style="scroll-margin-top:130px">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>계약 조건 안내</h2>
+      <p>아래 항목을 어떻게 조합하느냐에 따라 월 납입금이 크게 달라집니다.</p>
+    </div>
+
+    <div class="tbl-scroll">
+      <table class="t">
+        <tbody>
           <tr>
-            <td><strong>차량 소유</strong></td>
-            <td>렌트사 소유</td>
-            <td>금융사 소유<br>(만료 후 인수 선택)</td>
-            <td>회사 자산</td>
+            <th>선납금</th>
+            <td>
+              계약 시작 시 미리 납입하는 금액으로 <b>0% · 10% · 20% · 30%</b> 중 선택합니다.
+              많이 낼수록 월 납입금이 내려가지만 초기 현금 부담이 커지고, 만기에 돌려받지 않습니다.
+            </td>
           </tr>
           <tr>
-            <td><strong>차량 번호판</strong></td>
-            <td>렌트 전용 번호판</td>
-            <td>일반 번호판</td>
-            <td>일반 번호판</td>
+            <th>보증금</th>
+            <td>
+              계약 이행을 담보하는 금액으로 <b>0% · 10% · 20% · 30%</b> 중 선택합니다.
+              만기에 정산 후 돌려받는 금액이며, 심사 결과에 따라 요구 비율이 달라질 수 있습니다.
+            </td>
           </tr>
           <tr>
-            <td><strong>초기 비용</strong></td>
-            <td>보증금 조정 가능</td>
-            <td>선납금 · 보증금 조합</td>
-            <td>계약금 + 취득 관련 비용</td>
+            <th>계약 기간</th>
+            <td>
+              <b>24 · 36 · 48 · 60개월</b> 중 선택하거나 원하시는 기간을 직접 적으실 수 있습니다.
+              기간이 길수록 월 납입금은 내려가지만 총 납입액은 늘어납니다.
+            </td>
           </tr>
           <tr>
-            <td><strong>보험</strong></td>
-            <td>보통 포함</td>
-            <td>포함 · 미포함 선택</td>
-            <td>직접 가입</td>
+            <th>연간 주행거리</th>
+            <td>
+              장기렌트와 리스는 <b>연 1만 · 2만 · 3만km</b> 등 약정 거리를 정합니다.
+              약정을 낮게 잡을수록 월 납입금이 내려가지만, 초과하면 km당 정산 비용이 발생합니다.
+            </td>
           </tr>
           <tr>
-            <td><strong>정비</strong></td>
-            <td>포함형 선택 가능</td>
-            <td>포함형 선택 가능</td>
-            <td>직접 관리</td>
-          </tr>
-          <tr>
-            <td><strong>주행거리</strong></td>
-            <td>약정 있음<br>(초과 시 정산)</td>
-            <td>약정 있음<br>(초과 시 정산)</td>
-            <td>제한 없음</td>
-          </tr>
-          <tr>
-            <td><strong>만료 시</strong></td>
-            <td>반납</td>
-            <td>반납 · 인수 · 연장</td>
-            <td>계속 보유</td>
-          </tr>
-          <tr>
-            <td><strong>이럴 때 유리</strong></td>
-            <td>관리 부담을 줄이고 싶을 때<br>보험·정비를 묶고 싶을 때</td>
-            <td>조건을 세밀히 맞추고 싶을 때<br>만료 후 인수를 고려할 때</td>
-            <td>오래 탈 계획일 때<br>주행거리가 많을 때</td>
+            <th>정비 서비스</th>
+            <td>
+              엔진오일 등 소모품 교체와 정기 점검을 월 납입금에 포함할 수 있습니다.
+              포함 범위와 한도는 상품별로 다르므로 견적서에서 확인해 주세요.
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p class="note">
-      세무 처리는 계약 형태와 회사 상황에 따라 달라지므로, 손금 인정 범위와 부가세 처리는
-      담당 세무사와 확인하시는 것이 정확합니다. 저희는 계약 구조와 비용 조건을 비교해 드립니다.
-    </p>
-  </div>
-</section>
-
-<!-- ===== 선택 기준 ===== -->
-<section class="alt">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">선택 기준</span>
-      <h2>이 네 가지를 먼저 정하세요</h2>
-      <p>견적 신청 시 이 항목들을 받습니다. 정하지 못하셨으면 「상담 후 결정」으로 두셔도 됩니다.</p>
+    <div class="note">
+      <b>정하지 못한 항목은 「미정」으로 두셔도 됩니다.</b>
+      견적 화면에서 미정으로 남긴 조건은 대표적인 조합으로 나누어 비교 견적을 보내드립니다.
     </div>
 
-    <div class="grid g4">
-      <div class="card">
-        <h3>보유 기간</h3>
-        <p>24 · 36 · 48 · 60개월. 길수록 월 비용은 내려가지만 총액은 달라집니다.</p>
-      </div>
-      <div class="card">
-        <h3>연간 주행거리</h3>
-        <p>약정을 넘기면 정산이 붙습니다. 실제 운행량을 넉넉히 잡는 편이 안전합니다.</p>
-      </div>
-      <div class="card">
-        <h3>선납금 · 보증금</h3>
-        <p>초기 부담을 늘리면 월 비용이 내려갑니다. 현금 흐름에 맞춰 조정합니다.</p>
-      </div>
-      <div class="card">
-        <h3>정비 · 보험 포함 여부</h3>
-        <p>묶으면 관리가 편하고, 빼면 월 비용이 낮아집니다. 대수가 많을수록 포함형이 유리합니다.</p>
-      </div>
+    <div class="btn-row center" style="margin-top:32px">
+      <a class="btn btn-navy" href="quote.html">이 조건으로 카톡 견적 받기</a>
     </div>
   </div>
 </section>
 
-<!-- ===== 취급 차량 ===== -->
-<section>
+<!-- ===== CTA ===== -->
+<section class="cta-band">
   <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">취급 차량</span>
-      <h2>실제 출고가 기준으로 견적을 냅니다</h2>
-      <p>
-        견적 신청 화면에서 차종과 트림, 선택 옵션을 직접 고르실 수 있습니다.
-        옵션을 고르면 차량 합계가 바로 계산됩니다.
-      </p>
-    </div>
-
-    <div class="grid g3">
-      <div class="card">
-        <h3>승용 · SUV</h3>
-        <p>그랜저, 쏘나타, 아반떼, 싼타페, 투싼, 팰리세이드, 코나, 베뉴, 캐스퍼</p>
-      </div>
-      <div class="card">
-        <h3>전기 · 수소</h3>
-        <p>아이오닉 5, 아이오닉 6, 아이오닉 9, 넥쏘, 캐스퍼 Electric, ST1</p>
-      </div>
-      <div class="card">
-        <h3>승합 · 다목적</h3>
-        <p>스타리아, 스타리아 라운지, 스타리아 리무진, 스타리아 킨더</p>
-      </div>
-    </div>
-
-    <div class="callout" style="margin-top:22px">
-      <h3>다른 브랜드도 가능합니다</h3>
-      <p>
-        견적 화면에는 현대 · 기아 가격표가 올라가 있습니다. 제네시스 · 수입차를 찾으시면
-        견적 신청 시 요청사항에 적어 주세요. 제휴사를 통해 조건을 확인해 드립니다.
-      </p>
+    <h2>어느 쪽이 맞는지 <em>카톡으로</em> 비교해 드립니다</h2>
+    <p>상품 종류에서 「추천받기」를 고르시면 세 방식을 나란히 정리해 보내드립니다.</p>
+    <div class="btn-row center">
+      <a class="btn btn-gold" href="quote.html">카톡 견적 받기</a>
+      <a class="btn btn-line" href="index.html#picker">차량 먼저 보기</a>
     </div>
   </div>
 </section>
 
-<div class="band">
+<footer class="site-footer">
   <div class="wrap">
-    <h2>어느 방식이 유리한지 비교해 드립니다</h2>
-    <p>세 가지 조건을 나란히 놓고 보내드립니다. 비교 수수료는 없습니다.</p>
-    <a class="btn btn-primary" href="quote.html">견적 신청하기</a>
-  </div>
-</div>
-
-<footer>
-  <div class="wrap">
-    <div class="fl">
-      <div>
-        <div class="logo">ONLY<span>CARTALK</span></div>
-        <p style="margin-top:8px;max-width:34ch">법인·개인사업자 전용 승용차 렌트·리스·할부</p>
+    <div class="ft-top">
+      <div class="ft-logo">
+        <b>온니<i>카톡</i></b>
+        <p>견적은 오직 카톡으로 · 장기렌트 · 리스 · 할부</p>
       </div>
-      <div class="fnav">
+      <nav class="ft-nav">
+        <a href="index.html#picker">차량 보기</a>
         <a href="products.html">상품안내</a>
-        <a href="services.html">법인 서비스</a>
-        <a href="about.html">회사소개</a>
-        <a href="quote.html">견적 신청</a>
-      </div>
+        <a href="index.html#how">이용 방법</a>
+        <a href="quote.html">카톡 견적 받기</a>
+      </nav>
     </div>
-    <p class="copy">
+    <div class="ft-info">
+      <!-- TODO: 사업자 정보를 채워 주세요 (상호 · 대표자 · 사업자등록번호 · 주소) -->
       상호 · 대표자 · 사업자등록번호 · 주소 표기 예정<br>
-      본 사이트의 차량 가격은 제조사 공개 가격표 기준이며, 실제 계약 조건은 심사 결과에 따라 달라집니다.
-    </p>
+      차량 가격은 제조사 가격표 기준이며, 실제 계약 조건은 심사 결과에 따라 달라집니다.
+      <div class="ft-copy">&copy; 2026 OnlyCartalk. All rights reserved.</div>
+    </div>
   </div>
 </footer>
 
+<!-- 모바일 하단 고정 -->
+<div class="mobile-bar">
+  <a class="tel" href="#" data-kakao="chat" hidden>카톡 문의</a>
+  <a class="cta" href="quote.html">카톡 견적 받기</a>
+</div>
+
 <script src="assets/site.js"></script>
+<!-- 네이버 프리미엄 로그분석 (공통) -->
 <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
 <script type="text/javascript">
 if (!wcs_add) var wcs_add = {};
 wcs_add["wa"] = "";                 /* TODO: onlycartalk 인증키를 넣을 것 */
 if (!_nasa) var _nasa = {};
-if (window.wcs && wcs_add["wa"]) { wcs.inflow("onlycartalk.com"); wcs_do(); }
+if (window.wcs && wcs_add["wa"]) {
+  wcs.inflow("onlycartalk.com");
+  wcs_do();
+}
 </script>
 </body>
 </html>

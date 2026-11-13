@@ -3,329 +3,1010 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>법인 리스 견적 신청 | OnlyCartalk</title>
-<meta name="description" content="법인·개인사업자 승용차 리스 견적 신청. 실제 출고가 기준으로 차량과 옵션을 고르면 견적서를 이메일로 보내드립니다. 영업 전화는 드리지 않습니다.">
+<title>카톡 견적 받기 | 온니카톡</title>
+<meta name="description" content="장기렌트 · 리스 · 할부 온라인 견적 신청. 차량과 조건을 선택하시면 영업일 1일 이내에 맞춤 견적서를 카카오톡으로 보내드립니다. 전화는 드리지 않습니다.">
 
+<!-- EmailJS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script src="car-data.js"></script>
+
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="assets/style.css">
-
+<link rel="stylesheet" href="assets/quote.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink:      #14181d;
-    --ink-soft: #4a5260;
-    --muted:    #79828f;
-    --line:     #e2e6ec;
-    --bg:       #f5f7f9;
-    --card:     #ffffff;
-    --accent:   #1a5fd0;
-    --accent-s: #eaf1fd;
-    --ok:       #12855a;
-    --warn:     #b45309;
+  .kakao-note {
+    background: #FFFBD6; border: 1px solid #F2E48A; border-radius: 10px;
+    padding: 13px 16px; font-size: 12.5px; line-height: 1.75; color: #3C1E1E;
   }
-
-  body {
-    font-family: 'Apple SD Gothic Neo', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
+  .kakao-note b { color: #191919; }
+  .other-note {
+    background: #F8F9FB; border: 1px solid #EAECF0; border-radius: 10px;
+    padding: 13px 16px; margin-bottom: 18px; font-size: 12.5px; line-height: 1.75; color: #555;
   }
-
-  .qwrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 80px; }
-
-  /* ---------- header ---------- */
-  .qhead { margin-bottom: 22px; }
-  .brand { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--accent); }
-  h1 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin-top: 6px; line-height: 1.3; }
-  .sub { color: var(--ink-soft); font-size: 14px; margin-top: 8px; }
-  .promise {
-    margin-top: 14px; background: var(--accent-s); border-radius: 8px;
-    padding: 11px 14px; font-size: 13px; color: #16407f; font-weight: 600;
-  }
-
-  /* ---------- progress ---------- */
-  .prog { display: flex; gap: 6px; margin: 22px 0 18px; }
-  .pstep { flex: 1; height: 4px; border-radius: 2px; background: var(--line); transition: background .25s; }
-  .pstep.on { background: var(--accent); }
-  .pnum { font-size: 12px; color: var(--muted); margin-bottom: 14px; font-weight: 600; }
-
-  /* ---------- card ---------- */
-  .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 22px 20px; margin-bottom: 16px;
-  }
-  .card h2 { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
-  .card .hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .field { margin-top: 18px; }
-  label.lb { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
-  label.lb .req { color: #d02121; margin-left: 3px; }
-
-  /* ---------- choice chips ---------- */
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    border: 1px solid var(--line); background: #fff; border-radius: 999px;
-    padding: 8px 15px; font-size: 14px; cursor: pointer; transition: .15s;
-    font-family: inherit; color: var(--ink);
-  }
-  .chip:hover { border-color: #b9c2cf; }
-  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
-  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  /* ---------- list rows ---------- */
-  .rows { display: flex; flex-direction: column; gap: 8px; }
-  .row {
-    display: flex; align-items: center; gap: 12px; width: 100%;
-    border: 1px solid var(--line); background: #fff; border-radius: 10px;
-    padding: 13px 15px; cursor: pointer; transition: .15s; text-align: left;
-    font-family: inherit; font-size: 15px; color: var(--ink);
-  }
-  .row:hover { border-color: #b9c2cf; }
-  .row.on { border-color: var(--accent); background: var(--accent-s); }
-  .row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .row .nm { flex: 1; font-weight: 600; }
-  .row .pr { font-size: 14px; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .row .tick {
-    width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 5px;
-    display: grid; place-items: center; flex-shrink: 0; font-size: 12px; color: #fff;
-  }
-  .row.on .tick { background: var(--accent); border-color: var(--accent); }
-
-  /* ---------- inputs ---------- */
-  input[type=text], input[type=email], input[type=tel], textarea, select {
-    width: 100%; border: 1px solid var(--line); border-radius: 9px;
-    padding: 12px 14px; font-size: 15px; font-family: inherit; background: #fff; color: var(--ink);
-  }
-  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
-  textarea { min-height: 88px; resize: vertical; }
-
-  /* ---------- summary ---------- */
-  .sum { background: #fbfcfd; border: 1px solid var(--line); border-radius: 10px; padding: 15px 16px; margin-top: 16px; }
-  .sum-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 4px 0; }
-  .sum-row .k { color: var(--muted); flex-shrink: 0; }
-  .sum-row .v { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
-  .sum-total {
-    display: flex; justify-content: space-between; align-items: baseline;
-    border-top: 1px solid var(--line); margin-top: 10px; padding-top: 12px;
-  }
-  .sum-total .k { font-size: 14px; font-weight: 700; }
-  .sum-total .v { font-size: 21px; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
-  .sum-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.55; }
-
-  /* ---------- nav ---------- */
-  .qnav { display: flex; gap: 10px; margin-top: 20px; }
-  .btn {
-    flex: 1; border: none; border-radius: 10px; padding: 14px;
-    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: .15s;
-  }
-  .btn-main { background: var(--accent); color: #fff; }
-  .btn-main:hover { background: #164fae; }
-  .btn-main:disabled { background: #a9bbd8; cursor: not-allowed; }
-  .btn-sub { background: #fff; color: var(--ink-soft); border: 1px solid var(--line); flex: 0 0 96px; }
-  .btn-sub:hover { border-color: #b9c2cf; }
-
-  /* ---------- misc ---------- */
-  .hidden { display: none !important; }
-  .toast {
-    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(80px);
-    background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 999px;
-    font-size: 14px; opacity: 0; transition: .25s; z-index: 60; pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .loading { position: fixed; inset: 0; background: rgba(255,255,255,.82); display: none; place-items: center; z-index: 50; }
-  .loading.show { display: grid; }
-  .spin { width: 38px; height: 38px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: sp .8s linear infinite; }
-  @keyframes sp { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } .chip, .row, .btn { transition: none; } }
-
-  .done { text-align: center; padding: 44px 20px; }
-  .done .ic { font-size: 46px; }
-  .done h2 { font-size: 22px; font-weight: 800; margin-top: 12px; }
-  .done p { color: var(--ink-soft); font-size: 15px; margin-top: 10px; }
-
-  .scroll-box { max-height: 340px; overflow-y: auto; padding-right: 4px; }
+  .chip, .sub-chip, .sel-card { user-select: none; }
+  .chip:focus-visible, .sub-chip:focus-visible, .sel-card:focus-visible { outline: 2px solid #191919; outline-offset: 2px; }
 </style>
 </head>
 <body>
 
-<header class="hd">
-  <div class="wrap hd-in">
-    <a class="logo" href="index.html">ONLY<span>CARTALK</span></a>
-    <button class="burger" aria-label="메뉴 열기" aria-expanded="false">☰</button>
-    <nav class="nav">
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p>견적 신청 중...</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<header class="site-header">
+  <div class="wrap hd">
+    <a class="logo" href="index.html"><img src="assets/logo-mark.svg" alt="" width="30" height="30"><b>온니<i>카톡</i></b></a>
+    <button class="burger" type="button" aria-label="메뉴" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="gnb">
+      <a href="index.html#picker">차량 보기</a>
       <a href="products.html">상품안내</a>
-      <a href="services.html">법인 서비스</a>
-      <a href="about.html">회사소개</a>
-      <a class="hd-cta" href="quote.html">견적 신청</a>
+      <a href="index.html#how">이용 방법</a>
+      <a class="hd-cta" href="quote.html">카톡 견적 받기</a>
     </nav>
   </div>
 </header>
 
-<div class="qwrap">
+<div class="page-wrap">
+  <div class="qcard">
 
-  <div class="qhead">
-    <div class="brand">ONLYCARTALK</div>
-    <h1>법인 · 개인사업자<br>승용차 리스 견적</h1>
-    <p class="sub">차량과 옵션을 고르시면 조건에 맞는 견적서를 이메일로 보내드립니다.</p>
-    <div class="promise">전화번호 없이 이메일만 남기셔도 됩니다. 영업 전화는 드리지 않습니다.</div>
-  </div>
-
-  <div id="prog">
-    <div class="prog">
-      <div class="pstep on" id="ps1"></div>
-      <div class="pstep" id="ps2"></div>
-      <div class="pstep" id="ps3"></div>
-      <div class="pstep" id="ps4"></div>
+    <!-- HEADER -->
+    <div class="form-header">
+      <h1>견적은 <span>카톡으로</span> 받으세요</h1>
+      <p>원하는 차량과 조건을 선택하시면<br>맞춤 견적서를 <strong>카카오톡</strong>으로 보내드립니다</p>
     </div>
-    <div class="pnum" id="pnum">1 / 4 · 차량 선택</div>
-  </div>
 
-  <form id="form-wrap" onsubmit="return false;">
-
-    <!-- ===== STEP 1 : 차량 ===== -->
-    <section class="card" data-step="1">
-      <h2>어떤 차량을 알아보세요?</h2>
-      <p class="hint">현대 · 기아 실제 출고가 기준입니다. 다른 브랜드는 아래 요청사항에 적어주세요.</p>
-
-      <div class="field">
-        <label class="lb">제조사<span class="req">*</span></label>
-        <div class="chips" id="maker-grp"></div>
-      </div>
-
-      <div class="field hidden" id="cat-field">
-        <label class="lb">구분<span class="req">*</span></label>
-        <div class="chips" id="cat-grp"></div>
-      </div>
-
-      <div class="field hidden" id="model-field">
-        <label class="lb">차종<span class="req">*</span></label>
-        <div class="chips" id="model-grp"></div>
-      </div>
-
-      <div class="field hidden" id="variant-field">
-        <label class="lb">세부 사양<span class="req">*</span></label>
-        <div class="chips" id="variant-grp"></div>
-      </div>
-
-      <div class="field hidden" id="trim-field">
-        <label class="lb">트림<span class="req">*</span></label>
-        <div class="rows scroll-box" id="trim-grp"></div>
-      </div>
-    </section>
-
-    <!-- ===== STEP 2 : 옵션 ===== -->
-    <section class="card hidden" data-step="2">
-      <h2>선택 옵션</h2>
-      <p class="hint">필요한 옵션만 고르세요. 없으면 그냥 다음으로 넘어가시면 됩니다.</p>
-      <div class="field">
-        <div class="rows scroll-box" id="opt-grp"></div>
-      </div>
-      <div class="sum" id="opt-sum"></div>
-    </section>
-
-    <!-- ===== STEP 3 : 리스 조건 ===== -->
-    <section class="card hidden" data-step="3">
-      <h2>리스 조건</h2>
-      <p class="hint">정하지 못하셨으면 「상담 후 결정」을 고르셔도 됩니다.</p>
-
-      <div class="field">
-        <label class="lb">사업자 구분<span class="req">*</span></label>
-        <div class="chips" id="bizType-grp"></div>
-      </div>
-      <div class="field">
-        <label class="lb">계약 기간</label>
-        <div class="chips" id="period-grp"></div>
-      </div>
-      <div class="field">
-        <label class="lb">선납금</label>
-        <div class="chips" id="prepay-grp"></div>
-      </div>
-      <div class="field">
-        <label class="lb">보증금</label>
-        <div class="chips" id="deposit-grp"></div>
-      </div>
-      <div class="field">
-        <label class="lb">연간 주행거리</label>
-        <div class="chips" id="km-grp"></div>
-      </div>
-      <div class="field">
-        <label class="lb">정비 · 보험</label>
-        <div class="chips" id="care-grp"></div>
-      </div>
-    </section>
-
-    <!-- ===== STEP 4 : 신청자 ===== -->
-    <section class="card hidden" data-step="4">
-      <h2>어디로 보내드릴까요?</h2>
-      <p class="hint">견적서는 이메일로만 발송합니다.</p>
-
-      <div class="field">
-        <label class="lb" for="inp-company">회사명 / 상호<span class="req">*</span></label>
-        <input type="text" id="inp-company" placeholder="예: 온리카톡 주식회사" autocomplete="organization">
-      </div>
-      <div class="field">
-        <label class="lb" for="inp-name">담당자 성함<span class="req">*</span></label>
-        <input type="text" id="inp-name" placeholder="예: 홍길동" autocomplete="name">
-      </div>
-      <div class="field">
-        <label class="lb" for="inp-email">이메일<span class="req">*</span></label>
-        <input type="email" id="inp-email" placeholder="example@company.co.kr" autocomplete="email" inputmode="email">
-      </div>
-      <div class="field">
-        <label class="lb" for="inp-phone">연락처 <span style="font-weight:400;color:var(--muted)">(선택 · 안 적으셔도 됩니다)</span></label>
-        <input type="tel" id="inp-phone" placeholder="010-0000-0000" autocomplete="tel" inputmode="tel">
-      </div>
-      <div class="field">
-        <label class="lb" for="inp-memo">요청사항 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
-        <textarea id="inp-memo" placeholder="다른 브랜드 차량, 출고 희망 시기, 대수 등 자유롭게 적어주세요."></textarea>
-      </div>
-
-      <div class="sum" id="final-sum"></div>
-    </section>
-
-    <div class="qnav">
-      <button type="button" class="btn btn-sub hidden" id="btn-prev">이전</button>
-      <button type="button" class="btn btn-main" id="btn-next" disabled>다음</button>
+    <!-- PROGRESS -->
+    <div class="progress" id="prog">
+      <div class="ps"><div class="pd act" id="pd1">1</div><div class="pl" id="pl1"></div><div class="plb act" id="plb1">내차만들기</div></div>
+      <div class="ps"><div class="pd" id="pd2">2</div><div class="pl" id="pl2"></div><div class="plb" id="plb2">추가옵션</div></div>
+      <div class="ps"><div class="pd" id="pd3">3</div><div class="pl" id="pl3"></div><div class="plb" id="plb3">고객정보</div></div>
+      <div class="ps"><div class="pd" id="pd4">4</div><div class="pl" id="pl4"></div><div class="plb" id="plb4">계약조건</div></div>
+      <div class="ps"><div class="pd" id="pd5">5</div><div class="pl" style="display:none"></div><div class="plb" id="plb5">카톡받기</div></div>
     </div>
-  </form>
 
-  <div class="done hidden" id="success">
-    <div class="ic">📩</div>
-    <h2>견적 신청이 접수됐습니다</h2>
-    <p>영업일 1일 안에 적어주신 이메일로<br>견적서를 보내드리겠습니다.</p>
-    <p style="font-size:13px;margin-top:16px;color:var(--muted)">확인 전화는 드리지 않습니다.</p>
+    <div id="form-wrap">
+
+      <!-- ===== STEP 1 : 내차만들기 ===== -->
+      <div class="step act" id="s1">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">1 / 5단계</p>
+        <p class="sec-title">내 차 만들기</p>
+        <p class="sec-desc">제조사부터 순서대로 선택해 주세요<br>수입차 · 다른 브랜드는 <b>직접 입력</b>을 선택하고 차종을 적어주세요</p>
+
+        <div class="frow">
+          <span class="flabel">제조사</span>
+          <div class="chips" id="brand-grp"></div>
+        </div>
+
+        <!-- 직접 입력 : 가격표에 없는 차 -->
+        <div id="other-wrap" style="display:none">
+          <div class="other-note">
+            가격표에 없는 차량은 차종을 적어 주시면 <b>가격과 조건을 확인해 카톡으로 견적을 보내드립니다.</b>
+          </div>
+          <div class="frow">
+            <span class="flabel">원하시는 차종 <span style="color:#C0392B">*</span></span>
+            <input class="input-field" type="text" id="other-model" maxlength="80"
+                   placeholder="예) 제네시스 GV80 2.5T / BMW 520i">
+            <p class="contact-hint">브랜드 · 모델 · 트림을 아시는 만큼만 적어주셔도 됩니다.</p>
+          </div>
+          <div class="frow">
+            <span class="flabel">원하시는 옵션 · 색상 <span class="sub">(선택)</span></span>
+            <input class="input-field" type="text" id="other-opts" maxlength="120"
+                   placeholder="예) 파노라마 선루프, 흰색">
+          </div>
+        </div>
+
+        <div class="frow" id="cat-wrap" style="display:none">
+          <span class="flabel">차종 구분</span>
+          <div class="sub-chips" id="cat-grp"></div>
+        </div>
+
+        <div class="frow" id="model-wrap" style="display:none">
+          <span class="flabel">모델</span>
+          <div class="sub-chips" id="model-grp"></div>
+        </div>
+
+        <div class="frow" id="body-wrap" style="display:none">
+          <span class="flabel">세부 사양</span>
+          <div class="sub-chips" id="body-grp"></div>
+        </div>
+
+        <div class="frow" id="trim-wrap" style="display:none">
+          <span class="flabel">트림</span>
+          <div class="sub-chips" id="trim-grp"></div>
+        </div>
+
+        <div class="frow" id="opt-wrap" style="display:none">
+          <span class="flabel">제조사 옵션 <span class="sub">(복수 선택 가능)</span></span>
+          <div class="sub-chips" id="opt-grp"></div>
+        </div>
+
+        <div class="frow" id="color-wrap" style="display:none">
+          <span class="flabel">색상 <span class="sub">(선택 · 정하지 않으셔도 됩니다)</span></span>
+          <div id="extcolor-row" style="margin-bottom:8px">
+            <div style="font-size:12px;color:#888;margin-bottom:6px">외장</div>
+            <div class="sub-chips" id="extcolor-grp"></div>
+          </div>
+          <div id="intcolor-row">
+            <div style="font-size:12px;color:#888;margin-bottom:6px">내장</div>
+            <div class="sub-chips" id="intcolor-grp"></div>
+          </div>
+        </div>
+
+        <div id="price-wrap" style="display:none">
+          <div class="price-card">
+            <div>
+              <div style="font-size:11px;color:#888;margin-bottom:4px">예상 차량가</div>
+              <div class="price-main" id="price-disp">-</div>
+              <div class="price-break" id="price-break"></div>
+            </div>
+            <div class="price-note">제조사 가격표 기준<br>실제 견적과 다를 수 있어요</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-next" onclick="goStep(2)">다음 &rarr; 추가 옵션</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 2 : 추가옵션 ===== -->
+      <div class="step" id="s2">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">2 / 5단계</p>
+        <p class="sec-title">추가 옵션을 선택해 주세요</p>
+        <p class="sec-desc">출고 후 별도로 장착되는 항목입니다.<br>필요 없으시면 선택하지 않고 넘어가셔도 됩니다.</p>
+
+        <div class="frow">
+          <span class="flabel">추천 항목 <span class="sub">(복수 선택 가능)</span></span>
+          <div class="chips" id="ext-grp">
+            <div class="chip" onclick="toggleExt(this,'썬팅')">썬팅</div>
+            <div class="chip" onclick="toggleExt(this,'블랙박스')">블랙박스</div>
+            <div class="chip" onclick="toggleExt(this,'하이패스')">하이패스</div>
+            <div class="chip" onclick="toggleExt(this,'코일매트')">코일매트</div>
+            <div class="chip" onclick="toggleExt(this,'유리막 코팅')">유리막 코팅</div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">직접 입력 <span class="sub">(원하는 만큼 추가할 수 있어요)</span></span>
+          <div class="add-row">
+            <input class="input-field" type="text" id="ext-custom" maxlength="40"
+                   placeholder="예) PPF, 트렁크 매트"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();addCustom();}">
+            <button type="button" class="btn-add" onclick="addCustom()">+ 추가</button>
+          </div>
+          <div class="tag-list" id="custom-list"></div>
+          <p class="empty-note" id="custom-empty">아직 추가된 항목이 없습니다.</p>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-prev" onclick="goStep(1)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(3)">다음 &rarr; 고객 정보</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 3 : 고객정보 ===== -->
+      <div class="step" id="s3">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">3 / 5단계</p>
+        <p class="sec-title">고객 정보를 알려주세요</p>
+        <p class="sec-desc">고객 구분에 따라 적용 가능한 상품과 조건이 달라집니다</p>
+
+        <div class="frow">
+          <span class="flabel">고객 구분</span>
+          <div class="card-grid three" id="custtype-grp">
+            <div class="sel-card" onclick="selCard(this,'custtype-grp','custType')">
+              <div class="ct">개인</div>
+              <div class="cs">사업자등록증<br>없음</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'custtype-grp','custType')">
+              <div class="ct">개인사업자</div>
+              <div class="cs">개인 명의<br>사업자등록증 보유</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'custtype-grp','custType')">
+              <div class="ct">법인</div>
+              <div class="cs">법인 명의<br>사업자등록증 보유</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">상품 종류</span>
+          <div class="card-grid" id="product-grp">
+            <div class="sel-card" onclick="selCard(this,'product-grp','product')">
+              <div class="ct">장기렌트</div>
+              <div class="cs">보험 · 세금 포함<br>하 · 허 · 호 번호판</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'product-grp','product')">
+              <div class="ct">리스</div>
+              <div class="cs">일반 번호판<br>만기 시 반납 · 인수 선택</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'product-grp','product')">
+              <div class="ct">할부</div>
+              <div class="cs">처음부터 내 명의<br>원금 + 이자 분할 납부</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'product-grp','product')">
+              <div class="ct">추천받기</div>
+              <div class="cs">잘 모르겠어요<br>조건별로 비교해 주세요</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-prev" onclick="goStep(2)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(4)">다음 &rarr; 계약 조건</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 4 : 계약조건 ===== -->
+      <div class="step" id="s4">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">4 / 5단계</p>
+        <p class="sec-title">계약 조건을 설정해 주세요</p>
+        <p class="sec-desc">정하지 못한 항목은 <b>미정</b>을 고르셔도 됩니다. 조건별로 비교해 드립니다</p>
+
+        <div class="cond-grid">
+          <div class="frow">
+            <span class="flabel">선납금</span>
+            <div class="chips" id="prepay-grp" style="gap:6px">
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'prepay-grp')">0%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'prepay-grp')">10%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'prepay-grp')">20%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'prepay-grp')">30%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'prepay-grp')">미정</div>
+            </div>
+          </div>
+          <div class="frow">
+            <span class="flabel">보증금</span>
+            <div class="chips" id="deposit-grp" style="gap:6px">
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'deposit-grp')">0%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'deposit-grp')">10%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'deposit-grp')">20%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'deposit-grp')">30%</div>
+              <div class="chip" style="padding:9px 13px" onclick="selOne(this,'deposit-grp')">미정</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">계약 기간</span>
+          <div class="chips" id="period-grp"></div>
+          <div id="period-custom-wrap" style="display:none;margin-top:10px">
+            <input class="input-field" type="text" id="period-custom" maxlength="20"
+                   placeholder="예) 18개월" oninput="periodInput(this)">
+            <p class="contact-hint">원하시는 기간을 직접 적어주세요.</p>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">연간 주행거리</span>
+          <div class="chips" id="km-grp">
+            <div class="chip" onclick="selOne(this,'km-grp')">1만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">2만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">3만km</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">제한 없음</div>
+            <div class="chip" onclick="selOne(this,'km-grp')">미정</div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <span class="flabel">정비 서비스</span>
+          <div class="card-grid three" id="mnt-grp">
+            <div class="sel-card" onclick="selCard(this,'mnt-grp','maintenance')">
+              <div class="ct">불포함</div>
+              <div class="cs">정비는 직접 처리합니다</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'mnt-grp','maintenance')">
+              <div class="ct">포함</div>
+              <div class="cs">소모품 &middot; 정기점검 포함</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'mnt-grp','maintenance')">
+              <div class="ct">미정</div>
+              <div class="cs">둘 다 비교해 주세요</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-prev" onclick="goStep(3)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(5)">다음 &rarr; 카톡으로 받기</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 5 : 카톡받기 ===== -->
+      <div class="step" id="s5">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">5 / 5단계</p>
+        <p class="sec-title">어느 번호의 카톡으로 보내드릴까요?</p>
+        <p class="sec-desc">카카오톡을 쓰시는 휴대폰 번호만 있으면 됩니다. 전화는 드리지 않습니다</p>
+
+        <div class="contact-box">
+          <div>
+            <label class="flabel" for="inp-name">이름 / 상호</label>
+            <input type="text" id="oct-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <input class="input-field" type="text" id="inp-name" maxlength="40" placeholder="홍길동 또는 (주)한길상사" autocomplete="name">
+          </div>
+          <div>
+            <label class="flabel" for="inp-phone">카카오톡 받을 휴대폰 번호 <span style="color:#C0392B">*</span></label>
+            <input class="input-field" type="tel" id="inp-phone" placeholder="010-0000-0000"
+                   oninput="fmtPhone(this)" maxlength="13" inputmode="numeric" autocomplete="tel">
+          </div>
+          <div class="kakao-note">
+            <b>이 번호로 전화는 드리지 않습니다.</b><br>
+            견적서는 이 번호의 카카오톡으로만 보내드립니다. 낯선 계정의 메시지가 보이면
+            「온니카톡」 견적인지 확인하고 열어 주세요.
+          </div>
+        </div>
+
+        <label class="agree-row">
+          <input type="checkbox" id="agree">
+          <span>개인정보 수집 &middot; 이용에 동의합니다. <span style="color:#AAA">(수집 항목: 이름 · 휴대폰 번호 / 카톡 견적 발송 목적 / 보관 1년)</span></span>
+        </label>
+
+        <div class="divider"></div>
+
+        <p style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px">신청 내용 확인</p>
+        <div class="summary-card">
+          <div class="sum-row"><span class="sum-key">고객 구분</span><span class="sum-val" id="sum-custtype">-</span></div>
+          <div class="sum-row"><span class="sum-key">상품 종류</span><span class="sum-val" id="sum-product">-</span></div>
+          <div class="sum-row"><span class="sum-key">차량</span><span class="sum-val" id="sum-car">-</span></div>
+          <div class="sum-row" id="row-price"><span class="sum-key">예상 차량가</span><span class="sum-val" id="sum-price">-</span></div>
+          <div class="sum-row" id="row-opts"><span class="sum-key">제조사 옵션</span><span class="sum-val" id="sum-opts">-</span></div>
+          <div class="sum-row" id="row-color"><span class="sum-key">색상</span><span class="sum-val" id="sum-color">-</span></div>
+          <div class="sum-row"><span class="sum-key">추가 옵션</span><span class="sum-val" id="sum-ext">-</span></div>
+          <div class="sum-row"><span class="sum-key">선납금 / 보증금</span><span class="sum-val" id="sum-cond">-</span></div>
+          <div class="sum-row"><span class="sum-key">계약기간 / 주행거리</span><span class="sum-val" id="sum-term">-</span></div>
+          <div class="sum-row"><span class="sum-key">정비 서비스</span><span class="sum-val" id="sum-svc">-</span></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-prev" onclick="goStep(4)">&larr; 이전</button>
+        </div>
+        <button class="btn-submit" id="submit-btn" onclick="submitForm()">카톡으로 견적 받기 &rarr;</button>
+      </div>
+
+    </div><!-- /form-wrap -->
+
+    <!-- SUCCESS -->
+    <div class="success-wrap" id="success">
+      <div class="suc-icon" style="background:none"><img src="assets/logo-mark.svg" alt="" width="64" height="64"></div>
+      <h2>견적 신청이 완료됐어요!</h2>
+      <p>
+        남겨주신 번호의 카카오톡으로<br>
+        <strong>영업일 기준 1일 이내</strong>에 맞춤 견적서를 보내드릴게요.<br><br>
+        전화는 드리지 않습니다. 카톡만 확인해 주세요.
+      </p>
+      <p class="sub-note">온니카톡 &middot; 견적은 오직 카톡으로</p>
+      <div class="btn-row center" style="margin-top:26px;justify-content:center">
+        <a class="btn btn-gold" href="#" data-kakao="home" hidden>카톡 채널 추가하기</a>
+        <a class="btn btn-gold" href="products.html">상품 안내 보기</a>
+        <a class="btn btn-line-navy" href="index.html">홈으로</a>
+      </div>
+    </div>
+
+  </div><!-- /qcard -->
+
+  <div class="footer-note" style="color:#8A94A6">
+    입력하신 정보는 카톡 견적 발송 목적 외에 사용되지 않습니다.
   </div>
-
 </div>
 
-
-<footer>
+<footer class="site-footer">
   <div class="wrap">
-    <div class="fl">
-      <div>
-        <div class="logo">ONLY<span>CARTALK</span></div>
-        <p style="margin-top:8px;max-width:34ch">법인·개인사업자 전용 승용차 렌트·리스·할부</p>
+    <div class="ft-top">
+      <div class="ft-logo">
+        <b>온니<i>카톡</i></b>
+        <p>견적은 오직 카톡으로 · 장기렌트 · 리스 · 할부</p>
       </div>
-      <div class="fnav">
+      <nav class="ft-nav">
+        <a href="index.html#picker">차량 보기</a>
         <a href="products.html">상품안내</a>
-        <a href="services.html">법인 서비스</a>
-        <a href="about.html">회사소개</a>
-        <a href="quote.html">견적 신청</a>
-      </div>
+        <a href="index.html#how">이용 방법</a>
+        <a href="quote.html">카톡 견적 받기</a>
+      </nav>
     </div>
-    <p class="copy">
+    <div class="ft-info">
+      <!-- TODO: 사업자 정보를 채워 주세요 (상호 · 대표자 · 사업자등록번호 · 주소) -->
       상호 · 대표자 · 사업자등록번호 · 주소 표기 예정<br>
-      차량 가격은 제조사 공개 가격표 기준이며, 실제 계약 조건은 심사 결과에 따라 달라집니다.
-    </p>
+      차량 가격은 제조사 가격표 기준이며, 실제 계약 조건은 심사 결과에 따라 달라집니다.
+      <div class="ft-copy">&copy; 2026 OnlyCartalk. All rights reserved.</div>
+    </div>
   </div>
 </footer>
 
-<div class="loading" id="loading"><div class="spin"></div></div>
-<div class="toast" id="toast"></div>
+<script src="car-data.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/site.js"></script>
+<script>
+/* ================================================
+   EmailJS 설정 (EmailJS 대시보드 > Email Services / Email Templates)
+   - 신청 내용은 운영자 메일로 들어오고, 운영자가 그 번호로 카톡 견적을 보낸다.
+   - 템플릿 본문에 <pre>{{quote_detail}}</pre> 하나만 넣으면 전체 내용이 전달된다.
+   ================================================ */
+const EMAILJS_PUBLIC_KEY  = "5-wSho3g1I9sELOfE";
+const EMAILJS_SERVICE_ID  = "service_387x2ka";
+const EMAILJS_TEMPLATE_ID = "template_gd18ywl";
 
-<!-- 네이버 프리미엄 로그분석 공통 스크립트 -->
+if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
+
+/* ================================================
+   STATE
+   ================================================ */
+const state = {
+  custType: "",        // 개인 / 개인사업자 / 법인
+  product: "",         // 장기렌트 / 리스 / 할부 / 추천받기
+  brand: "", cat: "", model: "", body: "", trim: "",
+  opts: [],            // [{n, p}]  제조사 옵션
+  extColor: null,      // {n, p}  외장 색상 (선택)
+  intColor: null,      // {n, p}  내장 색상 (선택)
+  ext: [],             // 추가 옵션 (추천 항목)
+  extCustom: [],       // 추가 옵션 (직접 입력)
+  prepay: "", deposit: "", period: "", periodCustom: false, km: "",
+  maintenance: "",
+
+  /* 직접 입력 — 가격표에 없는 차(수입차 · 다른 브랜드) */
+  isOther: false,
+  otherModel: "", otherOpts: ""
+};
+
+const OTHER_BRAND = "직접 입력";
+
+const won = n => Number(n || 0).toLocaleString("ko-KR");
+
+/* ================================================
+   STEP 1 — 차량 선택 (제조사 → 구분 → 모델 → 세부사양 → 트림)
+   ================================================ */
+function makeChip(text, cls, onClick) {
+  const d = document.createElement("div");
+  d.className = cls;
+  d.textContent = text;
+  d.tabIndex = 0;
+  d.setAttribute("role", "button");
+  d.onclick = () => onClick(d);
+  return d;
+}
+
+function fill(grpId, wrapId, items, cls, onPick) {
+  const grp = document.getElementById(grpId);
+  grp.innerHTML = "";
+  items.forEach(name => {
+    grp.appendChild(makeChip(name, cls, el => {
+      grp.querySelectorAll("." + cls).forEach(c => c.classList.remove("sel"));
+      el.classList.add("sel");
+      onPick(name);
+    }));
+  });
+  if (wrapId) document.getElementById(wrapId).style.display = items.length ? "block" : "none";
+}
+
+function hideFrom(level) {
+  const wraps = ["cat-wrap", "model-wrap", "body-wrap", "trim-wrap", "opt-wrap"];
+  wraps.slice(level).forEach(id => document.getElementById(id).style.display = "none");
+  document.getElementById("color-wrap").style.display = "none";
+  state.extColor = state.intColor = null;
+  document.getElementById("price-wrap").style.display = "none";
+}
+
+(function initBrands() {
+  // 가격표에 있는 제조사 + 직접 입력
+  fill("brand-grp", null, Object.keys(CAR_TREE).concat(OTHER_BRAND), "chip", brand => {
+    state.brand = brand;
+    state.cat = state.model = state.body = state.trim = "";
+    state.opts = [];
+    hideFrom(0);
+
+    state.isOther = (brand === OTHER_BRAND);
+    document.getElementById("other-wrap").style.display = state.isOther ? "block" : "none";
+    if (state.isOther) return;
+
+    state.otherModel = state.otherOpts = "";
+    fill("cat-grp", "cat-wrap", Object.keys(CAR_TREE[brand]), "sub-chip", pickCat);
+  });
+})();
+
+/* 직접 입력값 수집 */
+function readOtherInputs() {
+  const v = id => (document.getElementById(id).value || "").trim();
+  state.otherModel = v("other-model");
+  state.otherOpts  = v("other-opts");
+}
+
+function pickCat(cat) {
+  state.cat = cat;
+  state.model = state.body = state.trim = "";
+  state.opts = [];
+  hideFrom(1);
+  fill("model-grp", "model-wrap", Object.keys(CAR_TREE[state.brand][cat]), "sub-chip", pickModel);
+}
+
+function pickModel(model) {
+  state.model = model;
+  state.body = state.trim = "";
+  state.opts = [];
+  hideFrom(2);
+  fill("body-grp", "body-wrap", Object.keys(CAR_TREE[state.brand][state.cat][model]), "sub-chip", pickBody);
+}
+
+function pickBody(body) {
+  state.body = body;
+  state.trim = "";
+  state.opts = [];
+  hideFrom(3);
+  fill("trim-grp", "trim-wrap", Object.keys(CAR_TREE[state.brand][state.cat][state.model][body]), "sub-chip", pickTrim);
+  // 트림 칩에 차량가를 함께 보여준다
+  const trims = CAR_TREE[state.brand][state.cat][state.model][body];
+  document.querySelectorAll("#trim-grp .sub-chip").forEach(c => {
+    const t = trims[c.textContent];
+    if (t && t.price) {
+      c.dataset.name = c.textContent;
+      c.innerHTML = c.textContent + '<span class="op">' + won(t.price) + '원</span>';
+    }
+  });
+}
+
+function pickTrim(trim) {
+  state.trim = trim;
+  state.opts = [];
+  hideFrom(4);
+
+  const node = curTrim();
+  const grp = document.getElementById("opt-grp");
+  grp.innerHTML = "";
+  if (node.opts && node.opts.length) {
+    node.opts.forEach(o => {
+      const d = makeChip(o.n, "sub-chip", () => {
+        d.classList.toggle("sel");
+        if (d.classList.contains("sel")) state.opts.push(o);
+        else state.opts = state.opts.filter(x => x.n !== o.n);
+        updatePrice();
+      });
+      if (o.p) d.innerHTML += '<span class="op">+' + won(o.p) + '원</span>';
+      grp.appendChild(d);
+    });
+    document.getElementById("opt-wrap").style.display = "block";
+  }
+  renderColors();
+  updatePrice();
+}
+
+/* 색상 — 차종별 색상표(CAR_COLOR_MAP). 한 번 더 누르면 선택을 푼다. */
+function curColors() {
+  return CAR_COLOR_MAP[state.model] || null;
+}
+
+function renderColors() {
+  const cols = curColors();
+  let any = false;
+  [["ext", "extColor"], ["int", "intColor"]].forEach(([side, key]) => {
+    const list = (cols && cols[side]) || [];
+    const grp = document.getElementById(side + "color-grp");
+    grp.innerHTML = "";
+    list.forEach(c => {
+      const d = makeChip(c.n, "sub-chip", () => {
+        const on = !d.classList.contains("sel");
+        grp.querySelectorAll(".sub-chip").forEach(x => x.classList.remove("sel"));
+        if (on) d.classList.add("sel");
+        state[key] = on ? c : null;
+        updatePrice();
+      });
+      if (c.p) d.innerHTML += '<span class="op">+' + won(c.p) + '원</span>';
+      grp.appendChild(d);
+    });
+    document.getElementById(side + "color-row").style.display = list.length ? "block" : "none";
+    if (list.length) any = true;
+  });
+  document.getElementById("color-wrap").style.display = any ? "block" : "none";
+}
+
+function colorSum() {
+  return (state.extColor ? state.extColor.p : 0) + (state.intColor ? state.intColor.p : 0);
+}
+
+function colorLabel() {
+  const parts = [];
+  if (state.extColor) parts.push("외장 " + state.extColor.n + (state.extColor.p ? "(+" + won(state.extColor.p) + "원)" : ""));
+  if (state.intColor) parts.push("내장 " + state.intColor.n + (state.intColor.p ? "(+" + won(state.intColor.p) + "원)" : ""));
+  return parts.length ? parts.join(" / ") : "미정";
+}
+
+function curTrim() {
+  try { return CAR_TREE[state.brand][state.cat][state.model][state.body][state.trim]; }
+  catch (e) { return null; }
+}
+
+function optSum() {
+  return state.opts.reduce((s, o) => s + (o.p || 0), 0);
+}
+
+function totalPrice() {
+  const node = curTrim();
+  if (!node) return 0;
+  return (node.price || 0) + optSum() + colorSum();
+}
+
+function updatePrice() {
+  const node = curTrim();
+  if (!node) return;
+  document.getElementById("price-disp").innerHTML = won(totalPrice()) + '<small>원</small>';
+  const parts = [];
+  if (optSum()) parts.push("옵션 " + won(optSum()) + "원");
+  if (colorSum()) parts.push("색상 " + won(colorSum()) + "원");
+  document.getElementById("price-break").textContent =
+    parts.length ? "기본 " + won(node.price) + "원 + " + parts.join(" + ") : "";
+  document.getElementById("price-wrap").style.display = "block";
+}
+
+/* ================================================
+   STEP 2 — 추가 옵션
+   ================================================ */
+function toggleExt(el, name) {
+  el.classList.toggle("sel");
+  if (el.classList.contains("sel")) state.ext.push(name);
+  else state.ext = state.ext.filter(x => x !== name);
+}
+
+function addCustom() {
+  const inp = document.getElementById("ext-custom");
+  const v = inp.value.trim();
+  if (!v) { showToast("추가할 옵션명을 입력해 주세요"); return; }
+  if (state.extCustom.includes(v)) { showToast("이미 추가된 항목입니다"); return; }
+  state.extCustom.push(v);
+  inp.value = "";
+  inp.focus();
+  renderCustom();
+}
+
+function removeCustom(name) {
+  state.extCustom = state.extCustom.filter(x => x !== name);
+  renderCustom();
+}
+
+function renderCustom() {
+  const list = document.getElementById("custom-list");
+  list.innerHTML = "";
+  state.extCustom.forEach(v => {
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.appendChild(document.createTextNode(v));
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = "&times;";
+    btn.title = "삭제";
+    btn.setAttribute("aria-label", v + " 삭제");
+    btn.onclick = () => removeCustom(v);
+    tag.appendChild(btn);
+    list.appendChild(tag);
+  });
+  document.getElementById("custom-empty").style.display = state.extCustom.length ? "none" : "block";
+}
+
+function allExt() {
+  return state.ext.concat(state.extCustom);
+}
+
+/* ================================================
+   STEP 3 / 4 — 단일 선택
+   ================================================ */
+function selOne(el, grpId) {
+  document.querySelectorAll("#" + grpId + " .chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  const key = {
+    "prepay-grp": "prepay", "deposit-grp": "deposit", "km-grp": "km"
+  }[grpId];
+  if (key) state[key] = el.textContent.trim();
+}
+
+function selCard(el, grpId, key) {
+  document.querySelectorAll("#" + grpId + " .sel-card").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state[key] = el.querySelector(".ct").textContent.trim();
+}
+
+/* ── 계약 기간 ─────────────────────────────── */
+const PERIODS = ["24개월", "36개월", "48개월", "60개월", "미정", "직접입력"];
+
+function renderPeriods() {
+  const grp = document.getElementById("period-grp");
+  if (grp.children.length) return;            // 한 번만 그린다 — 선택을 유지한다
+  PERIODS.forEach(name => {
+    const d = document.createElement("div");
+    d.className = "chip";
+    d.textContent = name;
+    d.onclick = () => pickPeriod(d, name);
+    grp.appendChild(d);
+  });
+}
+
+function pickPeriod(el, name) {
+  document.querySelectorAll("#period-grp .chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  const custom = (name === "직접입력");
+  state.periodCustom = custom;
+  const wrap = document.getElementById("period-custom-wrap");
+  const inp  = document.getElementById("period-custom");
+  wrap.style.display = custom ? "block" : "none";
+  if (custom) {
+    state.period = inp.value.trim();
+    inp.focus();
+  } else {
+    state.period = name;
+    inp.value = "";
+  }
+}
+
+function periodInput(el) {
+  state.period = el.value.trim();
+}
+
+/* ================================================
+   STEP 이동 + 단계별 검증
+   ================================================ */
+const TOTAL_STEPS = 5;
+
+function checkStep(n) {
+  if (n === 1) {
+    if (state.isOther) {
+      readOtherInputs();
+      if (!state.otherModel) return "원하시는 차종을 적어주세요";
+    } else {
+      if (!state.brand) return "제조사를 선택해 주세요";
+      if (!state.trim) return "차량을 트림까지 선택해 주세요";
+    }
+  }
+  if (n === 3) {
+    if (!state.custType) return "고객 구분을 선택해 주세요";
+    if (!state.product) return "상품 종류를 선택해 주세요";
+  }
+  if (n === 4) {
+    if (!state.prepay || !state.deposit) return "선납금과 보증금을 선택해 주세요";
+    if (state.periodCustom && !state.period) return "원하시는 계약 기간을 입력해 주세요";
+    if (!state.period || !state.km) return "계약기간과 주행거리를 선택해 주세요";
+    if (!state.maintenance) return "정비 서비스 여부를 선택해 주세요";
+  }
+  return null;
+}
+
+function goStep(n) {
+  const cur = currentStep();
+  if (n > cur) {                          // 앞으로 갈 때만 검증
+    for (let i = cur; i < n; i++) {
+      const err = checkStep(i);
+      if (err) { showToast(err); render(i); return; }
+    }
+  }
+  render(n);
+}
+
+function currentStep() {
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    if (document.getElementById("s" + i).classList.contains("act")) return i;
+  }
+  return 1;
+}
+
+function render(n) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("act"));
+  document.getElementById("s" + n).classList.add("act");
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const dot = document.getElementById("pd" + i);
+    const lbl = document.getElementById("plb" + i);
+    dot.classList.remove("act", "done");
+    lbl.classList.remove("act");
+    if (i < n) { dot.classList.add("done"); dot.innerHTML = "&#10003;"; }
+    else if (i === n) { dot.classList.add("act"); dot.textContent = i; lbl.classList.add("act"); }
+    else { dot.textContent = i; }
+    const pl = document.getElementById("pl" + i);
+    if (pl) pl.classList.toggle("done", i < n);
+  }
+  if (n === TOTAL_STEPS) buildSummary();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ================================================
+   SUMMARY
+   ================================================ */
+function carLabel() {
+  if (state.isOther) return state.otherModel ? "[직접 입력] " + state.otherModel : "[직접 입력] 차종 미입력";
+  const parts = [];
+  [state.brand, state.model, state.body, state.trim].forEach(v => {
+    if (v && !parts.includes(v)) parts.push(v);   // 차종명과 세부사양이 겹치는 경우 중복 제거
+  });
+  return parts.join(" ");
+}
+
+function buildSummary() {
+  const ext = allExt();
+  if (state.isOther) readOtherInputs();
+
+  // 직접 입력 차량은 가격표가 없어 차량가 · 색상 줄을 감춘다
+  const show = (id, on) => document.getElementById(id).style.display = on ? "flex" : "none";
+  show("row-price", !state.isOther);
+  show("row-color", !state.isOther);
+
+  document.getElementById("sum-custtype").textContent = state.custType || "-";
+  document.getElementById("sum-product").textContent = state.product || "-";
+  document.getElementById("sum-car").textContent    = carLabel() || "-";
+  document.getElementById("sum-price").textContent  = totalPrice() ? won(totalPrice()) + "원" : "-";
+  document.getElementById("sum-opts").textContent   = state.isOther
+    ? (state.otherOpts || "없음")
+    : (state.opts.length ? state.opts.map(o => o.n).join(", ") : "없음");
+  document.getElementById("sum-color").textContent  = colorLabel();
+  document.getElementById("sum-ext").textContent    = ext.length ? ext.join(", ") : "없음";
+  document.getElementById("sum-cond").textContent   = "선납 " + (state.prepay || "-") + " / 보증 " + (state.deposit || "-");
+  document.getElementById("sum-term").textContent   = (state.period || "-") + " / " + (state.km || "-");
+  document.getElementById("sum-svc").textContent    = state.maintenance || "-";
+}
+
+/* ================================================
+   SUBMIT
+   ================================================ */
+function validateAll() {
+  for (let i = 1; i <= TOTAL_STEPS - 1; i++) {
+    const err = checkStep(i);
+    if (err) { showToast(err); render(i); return false; }
+  }
+  const phone = document.getElementById("inp-phone").value.trim();
+  if (!phone) { showToast("카카오톡 받을 휴대폰 번호를 입력해 주세요"); return false; }
+  if (!/^01\d-\d{3,4}-\d{4}$/.test(phone)) { showToast("올바른 휴대폰 번호를 입력해 주세요"); return false; }
+  if (!document.getElementById("agree").checked) { showToast("개인정보 수집·이용에 동의해 주세요"); return false; }
+  return true;
+}
+
+function buildDetail(p) {
+  const carBlock = state.isOther
+    ? [
+        "── 차량 (직접 입력 · 가격 확인 필요)",
+        "차종       : " + p.car_full,
+        "옵션/색상  : " + p.factory_options
+      ]
+    : [
+        "── 내차만들기",
+        "차량       : " + p.car_full,
+        "차량기본가 : " + p.base_price,
+        "제조사옵션 : " + p.factory_options,
+        "색상       : " + p.car_color,
+        "예상차량가 : " + p.estimated_price
+      ];
+
+  return [
+    "[온니카톡 견적 신청 — 카톡으로 회신]",
+    "신청일시   : " + p.submit_time,
+    "",
+    "── 신청자",
+    "이름/상호  : " + p.customer_name,
+    "카톡 번호  : " + p.phone,
+    "회신 방법  : 카카오톡 (전화 금지)",
+    "유입경로   : " + p.lead_source,
+    "고객구분   : " + p.biz_type,
+    "상품종류   : " + p.product_type,
+    "",
+    ...carBlock,
+    "",
+    "── 추가옵션",
+    "선택항목   : " + p.external_options,
+    "직접입력   : " + p.external_custom,
+    "",
+    "── 계약조건",
+    "선납금     : " + p.prepay,
+    "보증금     : " + p.deposit,
+    "계약기간   : " + p.period,
+    "주행거리   : " + p.km,
+    "정비서비스 : " + p.care
+  ].join("\n");
+}
+
+async function submitForm() {
+  if (!validateAll()) return;
+  if (state.isOther) readOtherInputs();
+
+  // 허니팟: 화면에 안 보이는 칸이 채워져 있으면 봇이다. 성공한 것처럼 보이고 보내지 않는다.
+  const bot = document.getElementById("oct-hp").value;
+
+  const node = curTrim();
+  const name = document.getElementById("inp-name").value.trim() || "-";
+  const params = {
+    submit_time:      new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+    site:             "OnlyCartalk",
+    customer_name:    name,
+    company:          name,
+    phone:            document.getElementById("inp-phone").value.trim(),
+    email:            "",                       // 이메일은 받지 않는다 (카톡 전용)
+    lead_source:      (typeof octSourceLabel === "function" ? octSourceLabel() : "-"),
+    biz_type:         state.custType,
+    product_type:     state.product,
+    category:         state.isOther ? "직접 입력" : state.brand + " " + state.cat,
+    car_full:         carLabel(),
+    base_price:       state.isOther ? "확인 필요" : won(node.price) + "원",
+    factory_options:  state.isOther ? (state.otherOpts || "없음")
+                      : (state.opts.length ? state.opts.map(o => o.n + "(+" + won(o.p) + "원)").join(", ") : "없음"),
+    option_price:     state.isOther ? "-" : won(optSum()) + "원",
+    car_color:        state.isOther ? "-" : colorLabel(),
+    estimated_price:  state.isOther ? "확인 필요" : won(totalPrice()) + "원",
+    external_options: state.ext.length ? state.ext.join(", ") : "없음",
+    external_custom:  state.extCustom.length ? state.extCustom.join(", ") : "없음",
+    prepay:           state.prepay,
+    deposit:          state.deposit,
+    period:           state.period,
+    km:               state.km,
+    care:             state.maintenance,
+    memo:             "카카오톡으로만 회신 (전화 금지)"
+  };
+  params.customer_phone = params.phone;
+  params.noti_method    = "카카오톡";
+  params.quote_detail   = buildDetail(params);
+  params.message        = params.quote_detail;
+
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  document.getElementById("loading").classList.add("show");
+
+  try {
+    if (!bot) await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    document.getElementById("loading").classList.remove("show");
+    document.getElementById("form-wrap").style.display = "none";
+    document.getElementById("prog").style.display = "none";
+    document.getElementById("success").style.display = "block";
+    if (!bot) octConversion(0);   // 네이버 전환 — 견적 신청 완료
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    document.getElementById("loading").classList.remove("show");
+    btn.disabled = false;
+    showToast("전송 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    console.error("EmailJS error:", err);
+  }
+}
+
+/* 칩 · 카드를 키보드(Enter / Space)로도 고를 수 있게 한다 */
+document.querySelectorAll(".chip, .sel-card").forEach(el => {
+  el.tabIndex = 0; el.setAttribute("role", "button");
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const el = e.target.closest && e.target.closest(".chip, .sub-chip, .sel-card");
+  if (!el || e.target !== el) return;
+  e.preventDefault();
+  el.click();
+});
+
+renderPeriods();
+document.querySelectorAll("#period-grp .chip").forEach(el => { el.tabIndex = 0; el.setAttribute("role", "button"); });
+
+/* ================================================
+   홈에서 고른 차량 이어받기
+   ------------------------------------------------
+   홈 화면의 차량 카드는 quote.html?brand=..&cat=..&model=.. 로 넘어온다.
+   위에서 만들어 둔 선택지를 순서대로 눌러 1단계를 채워 놓는다.
+   값이 없거나 이름이 안 맞으면 조용히 멈춘다 — 평소처럼 직접 고르면 된다.
+   (차량 데이터는 다시 생성되므로 이름이 바뀔 수 있다)
+   ================================================ */
+(function prefillFromUrl() {
+  const q = new URLSearchParams(location.search);
+  if (!q.get("brand")) return;
+
+  const press = (grpId, text) => {
+    if (!text) return false;
+    const chip = Array.from(document.getElementById(grpId).children)
+      .find(c => c.textContent === text);
+    if (!chip) return false;
+    chip.click();      // 사용자가 직접 누른 것과 같은 경로를 탄다
+    return true;
+  };
+
+  if (!press("brand-grp", q.get("brand"))) return;
+  if (!press("cat-grp",   q.get("cat")))   return;
+  if (!press("model-grp", q.get("model"))) return;
+
+  // 세부 사양이 하나뿐이면 그것까지 골라 준다
+  const bodies = document.getElementById("body-grp").children;
+  let next = "body-wrap", msg = "차량이 선택되었습니다. 세부 사양을 골라주세요.";
+  if (bodies.length === 1) { bodies[0].click(); next = "trim-wrap"; msg = "차량이 선택되었습니다. 트림을 골라주세요."; }
+
+  const el = document.getElementById(next);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    showToast(msg, true);
+  }
+})();
+</script>
+<!-- 네이버 프리미엄 로그분석 (공통) -->
 <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
 <script type="text/javascript">
 if (!wcs_add) var wcs_add = {};
@@ -335,343 +1016,6 @@ if (window.wcs && wcs_add["wa"]) {
   wcs.inflow("onlycartalk.com");
   wcs_do();
 }
-</script>
-
-<script src="assets/site.js"></script>
-<script>
-/* ================================================
-   EmailJS
-   ================================================ */
-const EMAILJS_PUBLIC_KEY  = "5-wSho3g1I9sELOfE";
-const EMAILJS_SERVICE_ID  = "service_387x2ka";
-const EMAILJS_TEMPLATE_ID = "template_gd18ywl";
-emailjs.init(EMAILJS_PUBLIC_KEY);
-
-
-/* ================================================
-   상태
-   ================================================ */
-const state = {
-  step: 1,
-  maker: null, cat: null, model: null, variant: null, trim: null,
-  opts: [],
-  bizType: null, period: null, prepay: null, deposit: null, km: null, care: null,
-};
-
-const won = (n) => Number(n).toLocaleString("ko-KR");
-const $ = (id) => document.getElementById(id);
-
-/* 선택한 제조사 · 구분 · 차종에 해당하는 트림 */
-const inModel = (t) => t.k === state.maker && t.c === state.cat && t.m === state.model;
-
-/* 세부 사양이 없는 차종은 variant 가 null 이다 (엑셀 병합 셀 구조에서 비어 있던 칸) */
-const hasVariant = () => CAR_DATA.trims.some((t) => inModel(t) && t.v);
-
-const currentTrim = () =>
-  CAR_DATA.trims.find((t) =>
-    inModel(t) &&
-    (t.v || null) === (state.variant || null) && t.t === state.trim);
-
-const optTotal = () => state.opts.reduce((a, o) => a + o.p, 0);
-const totalPrice = () => {
-  const t = currentTrim();
-  return (t ? t.p : 0) + optTotal();
-};
-
-/* ================================================
-   렌더 — 선택지
-   ================================================ */
-function chips(hostId, items, selected, onPick) {
-  const host = $(hostId);
-  host.innerHTML = "";
-  items.forEach((it) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "chip" + (it === selected ? " on" : "");
-    b.textContent = it;
-    b.onclick = () => onPick(it);
-    host.appendChild(b);
-  });
-}
-
-function renderMakers() {
-  chips("maker-grp", CAR_DATA.makers, state.maker, (v) => {
-    state.maker = v; state.cat = null; state.model = null; state.variant = null; state.trim = null; state.opts = [];
-    renderMakers(); renderCategories(); renderModels(); renderVariants(); renderTrims(); refresh();
-  });
-}
-
-function renderCategories() {
-  const field = $("cat-field");
-  if (!state.maker) { field.classList.add("hidden"); return; }
-  field.classList.remove("hidden");
-  const cats = [...new Set(CAR_DATA.trims.filter((t) => t.k === state.maker).map((t) => t.c))];
-  chips("cat-grp", cats, state.cat, (v) => {
-    state.cat = v; state.model = null; state.variant = null; state.trim = null; state.opts = [];
-    renderCategories(); renderModels(); refresh();
-  });
-}
-
-function renderModels() {
-  const field = $("model-field");
-  if (!state.cat) { field.classList.add("hidden"); return; }
-  field.classList.remove("hidden");
-  const models = [...new Set(CAR_DATA.trims
-    .filter((t) => t.k === state.maker && t.c === state.cat).map((t) => t.m))];
-  chips("model-grp", models, state.model, (v) => {
-    state.model = v; state.variant = null; state.trim = null; state.opts = [];
-    renderModels(); renderVariants(); renderTrims(); refresh();
-  });
-  renderVariants(); renderTrims();
-}
-
-function renderVariants() {
-  const field = $("variant-field");
-  if (!state.model || !hasVariant()) { field.classList.add("hidden"); return; }
-  field.classList.remove("hidden");
-  const vs = [...new Set(CAR_DATA.trims
-    .filter((t) => inModel(t) && t.v).map((t) => t.v))];
-  chips("variant-grp", vs, state.variant, (v) => {
-    state.variant = v; state.trim = null; state.opts = [];
-    renderVariants(); renderTrims(); refresh();
-  });
-}
-
-function renderTrims() {
-  const field = $("trim-field");
-  const ready = state.model && (!hasVariant() || state.variant);
-  if (!ready) { field.classList.add("hidden"); return; }
-  field.classList.remove("hidden");
-
-  const list = CAR_DATA.trims.filter((t) =>
-    inModel(t) && (t.v || null) === (state.variant || null));
-
-  const host = $("trim-grp");
-  host.innerHTML = "";
-  list.forEach((t) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "row" + (t.t === state.trim ? " on" : "");
-    b.innerHTML = '<span class="nm"></span><span class="pr"></span>';
-    b.querySelector(".nm").textContent = t.t;
-    b.querySelector(".pr").textContent = won(t.p) + "원";
-    b.onclick = () => { state.trim = t.t; state.opts = []; renderTrims(); refresh(); };
-    host.appendChild(b);
-  });
-}
-
-function renderOptions() {
-  const t = currentTrim();
-  const host = $("opt-grp");
-  host.innerHTML = "";
-  if (!t || !t.o.length) {
-    host.innerHTML = '<p class="hint">이 트림은 선택 가능한 옵션이 없습니다.</p>';
-  } else {
-    t.o.forEach(([name, price]) => {
-      const picked = state.opts.some((o) => o.n === name);
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "row" + (picked ? " on" : "");
-      b.innerHTML = '<span class="tick">✓</span><span class="nm"></span><span class="pr"></span>';
-      b.querySelector(".nm").textContent = name;
-      b.querySelector(".pr").textContent = "+" + won(price) + "원";
-      b.onclick = () => {
-        const i = state.opts.findIndex((o) => o.n === name);
-        if (i >= 0) state.opts.splice(i, 1); else state.opts.push({ n: name, p: price });
-        renderOptions(); renderOptSum();
-      };
-      host.appendChild(b);
-    });
-  }
-  renderOptSum();
-}
-
-function renderOptSum() {
-  const t = currentTrim();
-  if (!t) return;
-  $("opt-sum").innerHTML =
-    '<div class="sum-row"><span class="k">차량 기본가</span><span class="v">' + won(t.p) + '원</span></div>' +
-    '<div class="sum-row"><span class="k">선택 옵션 ' + state.opts.length + '개</span><span class="v">' +
-      (optTotal() ? "+" + won(optTotal()) + "원" : "-") + '</span></div>' +
-    '<div class="sum-total"><span class="k">차량 합계</span><span class="v">' + won(totalPrice()) + '원</span></div>' +
-    '<p class="sum-note">부가세 별도 · 출고가 기준입니다. 월 납입금은 리스 조건과 심사 결과에 따라 정해지며, 견적서에 담아 보내드립니다.</p>';
-}
-
-const OPTS = {
-  bizType: ["법인", "개인사업자", "예정 (설립/등록 준비 중)"],
-  period:  ["24개월", "36개월", "48개월", "60개월", "상담 후 결정"],
-  prepay:  ["0%", "10%", "20%", "30%", "상담 후 결정"],
-  deposit: ["0%", "10%", "20%", "30%", "상담 후 결정"],
-  km:      ["1만km", "2만km", "3만km", "무제한", "상담 후 결정"],
-  care:    ["정비 포함", "보험 포함", "정비+보험 포함", "둘 다 미포함", "상담 후 결정"],
-};
-
-function renderConditions() {
-  Object.keys(OPTS).forEach((key) => {
-    chips(key + "-grp", OPTS[key], state[key], (v) => {
-      state[key] = v; renderConditions(); refresh();
-    });
-  });
-}
-
-function renderFinalSum() {
-  const t = currentTrim();
-  if (!t) return;
-  const car = [state.maker, state.model, state.variant, state.trim].filter(Boolean).join(" / ");
-  const rows = [
-    ["차량", car],
-    ["선택 옵션", state.opts.length ? state.opts.length + "개" : "없음"],
-    ["사업자 구분", state.bizType || "-"],
-    ["계약 기간", state.period || "상담 후 결정"],
-    ["선납금 / 보증금", (state.prepay || "상담 후") + " / " + (state.deposit || "상담 후")],
-    ["연간 주행거리", state.km || "상담 후 결정"],
-    ["정비 · 보험", state.care || "상담 후 결정"],
-  ];
-  $("final-sum").innerHTML =
-    rows.map((r) => '<div class="sum-row"><span class="k">' + r[0] + '</span><span class="v">' +
-      String(r[1]).replace(/</g, "&lt;") + '</span></div>').join("") +
-    '<div class="sum-total"><span class="k">차량 합계</span><span class="v">' + won(totalPrice()) + '원</span></div>';
-}
-
-/* ================================================
-   단계 이동
-   ================================================ */
-const STEP_LABEL = ["차량 선택", "선택 옵션", "리스 조건", "신청자 정보"];
-
-function canProceed() {
-  if (state.step === 1) return Boolean(currentTrim());
-  if (state.step === 2) return true;
-  if (state.step === 3) return Boolean(state.bizType);
-  if (state.step === 4) {
-    const email = $("inp-email").value.trim();
-    return Boolean($("inp-company").value.trim()) &&
-           Boolean($("inp-name").value.trim()) &&
-           /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
-  }
-  return false;
-}
-
-function refresh() {
-  document.querySelectorAll("[data-step]").forEach((el) => {
-    el.classList.toggle("hidden", Number(el.dataset.step) !== state.step);
-  });
-  for (let i = 1; i <= 4; i++) $("ps" + i).classList.toggle("on", i <= state.step);
-  $("pnum").textContent = state.step + " / 4 · " + STEP_LABEL[state.step - 1];
-  $("btn-prev").classList.toggle("hidden", state.step === 1);
-  $("btn-next").textContent = state.step === 4 ? "견적 신청하기" : "다음";
-  $("btn-next").disabled = !canProceed();
-}
-
-$("btn-prev").onclick = () => { if (state.step > 1) { state.step--; refresh(); window.scrollTo({ top: 0, behavior: "smooth" }); } };
-$("btn-next").onclick = () => {
-  if (!canProceed()) return;
-  if (state.step === 4) { submit(); return; }
-  state.step++;
-  if (state.step === 2) renderOptions();
-  if (state.step === 3) renderConditions();
-  if (state.step === 4) renderFinalSum();
-  refresh();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
-["inp-company", "inp-name", "inp-email"].forEach((id) => {
-  $(id).addEventListener("input", () => { $("btn-next").disabled = !canProceed(); });
-});
-
-/* ================================================
-   전송
-   ================================================ */
-function buildDetail(p) {
-  return [
-    "■ 차량",
-    "  구분        : " + p.category,
-    "  차종        : " + p.car_full,
-    "  차량 기본가 : " + p.base_price,
-    "",
-    "■ 선택 옵션",
-    "  " + p.factory_options,
-    "  옵션 합계   : " + p.option_price,
-    "",
-    "■ 차량 합계   : " + p.estimated_price,
-    "",
-    "■ 리스 조건",
-    "  사업자 구분 : " + p.biz_type,
-    "  계약 기간   : " + p.period,
-    "  선납금      : " + p.prepay,
-    "  보증금      : " + p.deposit,
-    "  주행거리    : " + p.km,
-    "  정비·보험   : " + p.care,
-    "",
-    "■ 신청자",
-    "  회사명      : " + p.company,
-    "  담당자      : " + p.customer_name,
-    "  이메일      : " + p.email,
-    "  연락처      : " + p.phone,
-    "",
-    "■ 요청사항",
-    "  " + p.memo,
-  ].join("\n");
-}
-
-async function submit() {
-  const btn = $("btn-next");
-  btn.disabled = true;
-  $("loading").classList.add("show");
-
-  const t = currentTrim();
-  const params = {
-    submit_time:      new Date().toLocaleString("ko-KR"),
-    site:             "OnlyCartalk",
-    category:         state.maker + " " + state.cat,
-    car_full:         [state.maker + " " + state.model, state.variant, state.trim].filter(Boolean).join(" / "),
-    base_price:       won(t.p) + "원",
-    factory_options:  state.opts.length ? state.opts.map((o) => o.n + "(+" + won(o.p) + "원)").join(", ") : "없음",
-    option_price:     optTotal() ? won(optTotal()) + "원" : "0원",
-    estimated_price:  won(totalPrice()) + "원",
-    biz_type:         state.bizType,
-    period:           state.period  || "상담 후 결정",
-    prepay:           state.prepay  || "상담 후 결정",
-    deposit:          state.deposit || "상담 후 결정",
-    km:               state.km      || "상담 후 결정",
-    care:             state.care    || "상담 후 결정",
-    company:          $("inp-company").value.trim(),
-    customer_name:    $("inp-name").value.trim(),
-    email:            $("inp-email").value.trim(),
-    phone:            $("inp-phone").value.trim() || "미기재 (이메일 회신 요청)",
-    memo:             $("inp-memo").value.trim()  || "없음",
-  };
-  params.quote_detail = buildDetail(params);
-
-  try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-    $("loading").classList.remove("show");
-    $("form-wrap").style.display = "none";
-    $("prog").style.display = "none";
-    $("success").classList.remove("hidden");
-    octConversion(0);   // 네이버 전환 — 견적 신청 완료
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } catch (err) {
-    $("loading").classList.remove("show");
-    btn.disabled = false;
-    showToast("전송 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
-    console.error("EmailJS error:", err);
-  }
-}
-
-let toastTimer = null;
-function showToast(msg) {
-  const el = $("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
-}
-
-/* ================================================
-   시작
-   ================================================ */
-renderMakers();
-refresh();
 </script>
 </body>
 </html>
