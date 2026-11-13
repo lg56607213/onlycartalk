@@ -977,6 +977,15 @@ document.querySelectorAll("#period-grp .chip").forEach(el => { el.tabIndex = 0; 
    값이 없거나 이름이 안 맞으면 조용히 멈춘다 — 평소처럼 직접 고르면 된다.
    (차량 데이터는 다시 생성되므로 이름이 바뀔 수 있다)
    ================================================ */
+/* 홈의 고객 유형 카드(quote.html?type=법인)에서 넘어오면 고객 구분을 미리 골라 둔다 */
+(function prefillCustType() {
+  const type = new URLSearchParams(location.search).get("type");
+  if (!type) return;
+  const card = Array.from(document.querySelectorAll("#custtype-grp .sel-card"))
+    .find(c => c.querySelector(".ct").textContent.trim() === type);
+  if (card) card.click();
+})();
+
 (function prefillFromUrl() {
   const q = new URLSearchParams(location.search);
   if (!q.get("brand")) return;

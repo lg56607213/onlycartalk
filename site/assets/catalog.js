@@ -126,7 +126,7 @@ function quoteUrl(v) {
   const p = new URLSearchParams({ brand: v.brand, cat: v.cat, model: v.model });
   // 홈에서 들어온 유입경로(?src=, utm_*)를 그대로 이어붙인다
   const cur = new URLSearchParams(location.search);
-  for (const k of ["src", "ref", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+  for (const k of ["type", "src", "ref", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     if (cur.has(k)) p.set(k, cur.get(k));
   }
   return "quote.html?" + p.toString();

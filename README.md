@@ -4,7 +4,7 @@
 정적 웹사이트이며, 자매 사이트 [mytruck.kr](https://mytruck.kr) 과 같은 틀(차량 카드 홈 + 5단계 견적 폼)을 씁니다.
 
 - 도메인: **https://onlycartalk.com**
-- 호스팅: **Netlify** → [INFRA.md](INFRA.md)
+- 호스팅: **Cloudflare Workers** → [INFRA.md](INFRA.md)
 
 ## 견적이 오가는 길
 
@@ -28,7 +28,7 @@ onlycartalk/
 │       ├─ site.js             공통 스크립트 · 카카오톡 채널 주소
 │       └─ catalog.js          차량 카드 분류 · 사진 지정
 ├─ tools/acerent-to-car-data.js  에이스렌트 견적기 가격표 → car-data.js 변환기
-├─ netlify.toml              배포 설정 (publish = site) · 예전 주소 리다이렉트
+├─ wrangler.jsonc            Cloudflare Workers 배포 설정 (site 폴더 배포)
 ├─ INFRA.md
 └─ README.md
 ```
@@ -85,7 +85,7 @@ const CAR_PHOTOS = {
 
 ### 수정하고 배포하기
 
-`site/` 안의 파일을 고치고 `main` 브랜치에 push 하면 Netlify가 자동 배포합니다.
+`site/` 안의 파일을 고치고 `main` 브랜치에 push 하면 Cloudflare가 자동 배포합니다.
 
 ```bash
 git add .
