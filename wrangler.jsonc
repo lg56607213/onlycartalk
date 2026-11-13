@@ -1,0 +1,27 @@
+{
+  // ============================================================
+  // Cloudflare Workers 정적 사이트 설정 (mytruck 과 같은 방식)
+  // ------------------------------------------------------------
+  // Cloudflare 대시보드에서 이 저장소를 Worker 로 연결하면
+  // main 브랜치에 push 할 때마다 `npx wrangler deploy` 가 실행된다.
+  // Netlify 로 배포하는 동안에는 이 파일이 있어도 아무 영향이 없다.
+  // ============================================================
+
+  "name": "onlycartalk",
+  "compatibility_date": "2026-08-01",
+
+  "assets": {
+    // 배포할 폴더 — 이 안의 파일이 사이트 루트가 된다.
+    "directory": "./site",
+
+    // 없는 주소로 들어오면 site/404.html 을 보여준다.
+    "not_found_handling": "404-page",
+
+    // /quote.html 로 들어와도 /quote 로 정리해서 보여준다.
+    "html_handling": "auto-trailing-slash"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

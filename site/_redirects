@@ -1,0 +1,12 @@
+# Cloudflare Workers 주소 규칙 (배포 루트에 그대로 올라간다)
+#
+# 주의 — "/quote → /quote.html" 같은 규칙을 넣으면 안 된다.
+#   Workers 는 /quote 요청을 quote.html 로 알아서 연결하고
+#   /quote.html 요청은 /quote 로 정리하므로, 넣으면 무한 리다이렉트가 난다.
+
+# --- 광고용 짧은 주소 → 견적 폼 ---
+/q          /quote      301
+
+# --- 개편 전 주소 호환 ---
+/services   /products   301
+/about      /           301
