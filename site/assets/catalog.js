@@ -26,6 +26,24 @@ const CAT_TABS = [
 
      "그랜저": "assets/cars/grandeur.png",                        */
 const CAR_PHOTOS = {
+  "그랜저": "assets/cars/grandeur.png",
+  "K5": "assets/cars/k5.png",
+  "K8": "assets/cars/k8.png",
+  "K9": "assets/cars/k9.png",
+  "레이": "assets/cars/ray.png",
+  "레이 EV": "assets/cars/ray.png",
+  "셀토스": "assets/cars/seltos.png",
+  "쏘렌토": "assets/cars/sorento.png",
+  "스포티지": "assets/cars/sportage.png",
+  "카니발": "assets/cars/carnival.png",
+  "스타리아": "assets/cars/staria.png",
+  "스타리아 Hybrid": "assets/cars/staria.png",
+  "포터II 카고": "assets/cars/porter2-cargo.png",
+  "포터II 특장차": "assets/cars/porter2-special.png",
+  "포터II Electric": "assets/cars/porter2-ev.png",
+  "봉고3 EV": "assets/cars/bongo3-ev.png",
+  "PV5": "assets/cars/pv5.png",
+  "ST1": "assets/cars/st1.png",
 };
 
 /* 엑셀 원본의 오타 — 화면에 보이기 전에 바로잡는다 */
