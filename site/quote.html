@@ -429,15 +429,34 @@
 <script src="assets/site.js"></script>
 <script>
 /* ================================================
-   EmailJS 설정 (EmailJS 대시보드 > Email Services / Email Templates)
-   - 신청 내용은 운영자 메일로 들어오고, 운영자가 그 번호로 카톡 견적을 보낸다.
-   - 템플릿 본문에 <pre>{{quote_detail}}</pre> 하나만 넣으면 전체 내용이 전달된다.
+   견적 접수
+   ------------------------------------------------
+   1순위  /api/quote — Cloudflare Worker(src/index.js)가 받아
+          Cloudflare Email Routing 으로 운영자 메일(jdgp@jdgp.co.kr)에 보낸다.
+   예비   EmailJS — 위 접수가 실패했을 때만 쓴다. 신청이 사라지지 않게 하려는 안전장치.
    ================================================ */
 const EMAILJS_PUBLIC_KEY  = "5-wSho3g1I9sELOfE";
 const EMAILJS_SERVICE_ID  = "service_387x2ka";
 const EMAILJS_TEMPLATE_ID = "template_gd18ywl";
 
 if (window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
+
+async function sendQuote(params) {
+  try {
+    const res = await fetch("/api/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params)
+    });
+    if (res.ok) return "cloudflare";
+    console.warn("견적 접수 API 실패:", res.status);
+  } catch (err) {
+    console.warn("견적 접수 API 연결 실패:", err);
+  }
+  if (!window.emailjs) throw new Error("접수 실패 (예비 경로 없음)");
+  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+  return "emailjs";
+}
 
 /* ================================================
    STATE
@@ -959,7 +978,7 @@ async function submitForm() {
   document.getElementById("loading").classList.add("show");
 
   try {
-    if (!bot) await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    if (!bot) await sendQuote(params);
     document.getElementById("loading").classList.remove("show");
     document.getElementById("form-wrap").style.display = "none";
     document.getElementById("prog").style.display = "none";
@@ -970,7 +989,7 @@ async function submitForm() {
     document.getElementById("loading").classList.remove("show");
     btn.disabled = false;
     showToast("전송 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
-    console.error("EmailJS error:", err);
+    console.error("견적 전송 오류:", err);
   }
 }
 

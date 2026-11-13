@@ -9,3 +9,6 @@ desktop.ini
 .DS_Store
 .vscode/
 node_modules/
+
+# wrangler 로컬 실행 상태
+.wrangler/

@@ -9,7 +9,7 @@
 ## 견적이 오가는 길
 
 1. 고객이 차량 · 조건을 고르고 **휴대폰 번호**(필수)와 카카오톡 ID · 이메일(선택)을 남긴다
-2. 신청 내용이 EmailJS 로 운영자 메일에 들어온다 — 본문에 "카카오톡으로만 회신 (전화 금지)" 가 찍힌다
+2. 신청 내용이 **Cloudflare 이메일 라우팅**으로 운영자 메일(`jdgp@jdgp.co.kr`)에 들어온다 — 본문에 "카카오톡으로만 회신 (전화 금지)" 가 찍힌다
 3. 운영자가 그 번호(또는 카톡 ID)의 카카오톡으로 견적서를 보낸다. 이메일을 남긴 고객에게는 메일로도 함께 보낸다
 
 ## 폴더 구조
@@ -27,6 +27,7 @@ onlycartalk/
 │       ├─ quote.css           견적 폼 디자인
 │       ├─ site.js             공통 스크립트 · 카카오톡 채널 주소
 │       └─ catalog.js          차량 카드 분류 · 사진 지정
+├─ src/index.js              견적 접수 API (`POST /api/quote` → 메일 발송)
 ├─ tools/acerent-to-car-data.js  에이스렌트 견적기 가격표 → car-data.js 변환기
 ├─ wrangler.jsonc            Cloudflare Workers 배포 설정 (site 폴더 배포)
 ├─ INFRA.md
@@ -93,7 +94,22 @@ git commit -m "..."
 git push
 ```
 
-## EmailJS
+## 견적 메일
+
+견적 폼은 `POST /api/quote` 로 보내고, Worker(`src/index.js`)가 Cloudflare 이메일 라우팅으로 메일을 보냅니다.
+
+| 항목 | 값 | 바꾸는 곳 |
+|---|---|---|
+| 받는 주소 | `jdgp@jdgp.co.kr` | `wrangler.jsonc` 의 `MAIL_TO` 와 `send_email.destination_address` (둘 다) |
+| 보내는 주소 | `noti@onlycartalk.com` | `wrangler.jsonc` 의 `MAIL_FROM` |
+
+- 받는 주소는 Cloudflare 대시보드 → onlycartalk.com → 이메일 → 이메일 라우팅 → **대상 주소**에 인증되어 있어야 합니다. 인증되지 않은 주소로는 발송되지 않습니다.
+- 고객이 이메일을 남기면 그 주소가 Reply-To 로 들어가, 메일에서 바로 답장할 수 있습니다.
+- 발송 실패는 Worker 로그(관찰 가능성)에 `견적 메일 발송 실패` 로 남습니다.
+
+## EmailJS (예비)
+
+위 접수가 실패했을 때만 EmailJS 로 보냅니다. 신청이 사라지지 않게 하려는 안전장치이며, 이 경로의 메일은 EmailJS 템플릿의 To Email 로 갑니다.
 
 `site/quote.html` 안에 키가 들어 있습니다. 템플릿 본문은 코드(HTML) 모드에서 아래 하나면 됩니다.
 
@@ -124,7 +140,7 @@ https://onlycartalk.com/q?src=naver&utm_campaign=11월
 | 항목 | 상태 |
 |---|---|
 | 소스 버전 관리 | ✅ 이 저장소 |
-| 견적 신청 폼 | ✅ EmailJS → 운영자가 카톡으로 회신 |
+| 견적 신청 폼 | ✅ Cloudflare 이메일 라우팅 → 운영자가 카톡으로 회신 (EmailJS 는 예비) |
 | 페이지 구성 | ✅ 홈 · 상품안내 · 견적 (회사소개는 사업자 정보가 정해지면 추가) |
 | 차량 데이터 | ✅ 에이스렌트 견적기 전 차종 (트림 474개 · 차종 50개) |
 | 카카오톡 채널 | ❌ 미개설 — 만들면 `site.js` 에 주소 입력 |
