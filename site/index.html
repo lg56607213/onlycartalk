@@ -70,6 +70,23 @@
     .hero-copy > p { font-size: 15px; }
   }
 
+  /* 입구 두 개 — 신차 견적 / 저신용자 전용 */
+  .entry { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; }
+  .entry-item {
+    display: flex; flex-direction: column; gap: 6px; padding: 18px 18px 17px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.35); color: #fff; transition: .15s;
+  }
+  .entry-item b { font-size: 16px; font-weight: 800; word-break: keep-all; line-height: 1.35; }
+  .entry-item b::after { content: " →"; }
+  .entry-item span { font-size: 12.5px; line-height: 1.6; color: #B9BDC6; word-break: keep-all; }
+  .entry-item:hover { border-color: #F2C230; }
+  .entry-item:hover b { color: #F2C230; }
+  .entry-item.main { background: #F2C230; border-color: #F2C230; color: #191919; }
+  .entry-item.main span { color: #4A3F12; }
+  .entry-item.main:hover { background: #E3B01E; }
+  .entry-item.main:hover b { color: #191919; }
+  @media (max-width: 480px) { .entry { grid-template-columns: 1fr; } }
+
   /* 카톡 예시 */
   .chat { background: #B2C7DA; border-radius: 18px; padding: 0 14px 18px; display: flex; flex-direction: column; gap: 8px; max-width: 380px; width: 100%; justify-self: end; }
   .chat-top { display: flex; align-items: center; gap: 8px; margin: 0 -14px 6px; padding: 12px 14px; background: rgba(255,255,255,.35); border-radius: 18px 18px 0 0; font-size: 14px; font-weight: 700; color: #191919; }
@@ -116,6 +133,7 @@
     <nav class="gnb">
       <a href="index.html#picker">차량 보기</a>
       <a href="products.html">상품안내</a>
+      <a href="lowcredit.html">저신용자 전용</a>
       <a href="index.html#how">이용 방법</a>
       <a class="hd-cta" href="quote.html">카톡 견적 받기</a>
     </nav>
@@ -128,9 +146,15 @@
     <div class="hero-copy">
       <h1>신차 견적,<br>전화 말고 <em>카톡으로</em> 받으세요</h1>
       <p>차량과 조건을 고르고 휴대폰 번호만 남기면 됩니다. 견적서는 카카오톡으로 보내드리고, 저희가 먼저 전화하지 않습니다.</p>
-      <div class="btn-row">
-        <a class="btn btn-gold" href="#picker">차량 고르기</a>
-        <a class="btn btn-line" href="products.html">렌트 · 리스 · 할부 차이</a>
+      <div class="entry">
+        <a class="entry-item main" href="quote.html">
+          <b>신차 견적 받기</b>
+          <span>현대 · 기아 전 차종 · 장기렌트 · 리스 · 할부</span>
+        </a>
+        <a class="entry-item" href="lowcredit.html">
+          <b>저신용자 전용 차량 추천받기</b>
+          <span>연체 · 개인회생 중에도 상담 · 자체 심사로 당일 회신</span>
+        </a>
       </div>
       <ul class="hero-facts">
         <li>현대 · 기아 전 차종</li>
@@ -342,7 +366,7 @@
     <p>차량과 조건만 선택하시면 됩니다. 전화는 드리지 않습니다.</p>
     <div class="btn-row center">
       <a class="btn btn-gold" href="quote.html">카톡 견적 받기</a>
-      <a class="btn btn-line" href="products.html">상품 먼저 보기</a>
+      <a class="btn btn-line" href="lowcredit.html">저신용자 전용 차량 추천받기</a>
     </div>
   </div>
 </section>
@@ -357,6 +381,7 @@
       <nav class="ft-nav">
         <a href="index.html#picker">차량 보기</a>
         <a href="products.html">상품안내</a>
+        <a href="lowcredit.html">저신용자 전용</a>
         <a href="index.html#how">이용 방법</a>
         <a href="quote.html">카톡 견적 받기</a>
       </nav>

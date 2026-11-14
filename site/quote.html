@@ -23,6 +23,14 @@
     background: #F8F9FB; border: 1px solid #EAECF0; border-radius: 10px;
     padding: 13px 16px; margin-bottom: 18px; font-size: 12.5px; line-height: 1.75; color: #555;
   }
+  .lc-link {
+    display: block; margin: -8px 0 26px; padding: 12px 16px; border-radius: 10px;
+    background: #F8F9FB; border: 1px solid #EAECF0; text-align: center;
+    font-size: 13px; color: #555; transition: border-color .15s;
+  }
+  .lc-link b { color: #191919; text-decoration: underline; text-decoration-color: #F2C230; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .lc-link b::after { content: " →"; }
+  .lc-link:hover { border-color: #F2C230; }
   .chip, .sub-chip, .sel-card { user-select: none; }
   .chip:focus-visible, .sub-chip:focus-visible, .sel-card:focus-visible { outline: 2px solid #191919; outline-offset: 2px; }
 </style>
@@ -43,6 +51,7 @@
     <nav class="gnb">
       <a href="index.html#picker">차량 보기</a>
       <a href="products.html">상품안내</a>
+      <a href="lowcredit.html">저신용자 전용</a>
       <a href="index.html#how">이용 방법</a>
       <a class="hd-cta" href="quote.html">카톡 견적 받기</a>
     </nav>
@@ -58,13 +67,15 @@
       <p>원하는 차량과 조건을 선택하시면<br>맞춤 견적서를 <strong>카카오톡</strong>으로 보내드립니다</p>
     </div>
 
+    <a class="lc-link" href="lowcredit.html">신용이 걱정되시나요? <b>저신용자 전용 상품 보기</b></a>
+
     <!-- PROGRESS -->
     <div class="progress" id="prog">
       <div class="ps"><div class="pd act" id="pd1">1</div><div class="pl" id="pl1"></div><div class="plb act" id="plb1">내차만들기</div></div>
       <div class="ps"><div class="pd" id="pd2">2</div><div class="pl" id="pl2"></div><div class="plb" id="plb2">추가옵션</div></div>
       <div class="ps"><div class="pd" id="pd3">3</div><div class="pl" id="pl3"></div><div class="plb" id="plb3">고객정보</div></div>
       <div class="ps"><div class="pd" id="pd4">4</div><div class="pl" id="pl4"></div><div class="plb" id="plb4">계약조건</div></div>
-      <div class="ps"><div class="pd" id="pd5">5</div><div class="pl" style="display:none"></div><div class="plb" id="plb5">카톡받기</div></div>
+      <div class="ps"><div class="pd" id="pd5">5</div><div class="pl" style="display:none"></div><div class="plb" id="plb5">견적받기</div></div>
     </div>
 
     <div id="form-wrap">
@@ -308,7 +319,7 @@
 
         <div class="btn-row">
           <button class="btn-prev" onclick="goStep(3)">&larr; 이전</button>
-          <button class="btn-next" onclick="goStep(5)">다음 &rarr; 카톡으로 받기</button>
+          <button class="btn-next" onclick="goStep(5)">다음 &rarr; 견적 받을 방법</button>
         </div>
       </div>
 
@@ -316,7 +327,25 @@
       <div class="step" id="s5">
         <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">5 / 5단계</p>
         <p class="sec-title">어디로 보내드릴까요?</p>
-        <p class="sec-desc">휴대폰 번호만 있으면 됩니다. 카톡 ID와 이메일은 적어 주시면 더 빠르고 정확하게 전달됩니다</p>
+        <p class="sec-desc">견적서를 받을 방법을 골라 주세요. 어떤 방법을 고르셔도 전화는 드리지 않습니다</p>
+
+        <div class="frow">
+          <span class="flabel">회신 방법</span>
+          <div class="card-grid three" id="reply-grp">
+            <div class="sel-card sel" onclick="selCard(this,'reply-grp','reply');applyReply()">
+              <div class="ct">카카오톡</div>
+              <div class="cs">휴대폰 번호의<br>카톡으로 받기</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'reply-grp','reply');applyReply()">
+              <div class="ct">문자</div>
+              <div class="cs">휴대폰 번호로<br>문자 받기</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'reply-grp','reply');applyReply()">
+              <div class="ct">이메일</div>
+              <div class="cs">이메일로<br>견적서 파일 받기</div>
+            </div>
+          </div>
+        </div>
 
         <div class="contact-box">
           <div>
@@ -325,26 +354,25 @@
             <input class="input-field" type="text" id="inp-name" maxlength="40" placeholder="홍길동 또는 (주)한길상사" autocomplete="name">
           </div>
           <div>
-            <label class="flabel" for="inp-phone">카카오톡 받을 휴대폰 번호 <span style="color:#C0392B">*</span></label>
+            <label class="flabel" for="inp-phone"><span id="phone-label">카카오톡 받을 휴대폰 번호</span> <span style="color:#C0392B">*</span></label>
             <input class="input-field" type="tel" id="inp-phone" placeholder="010-0000-0000"
                    oninput="fmtPhone(this)" maxlength="13" inputmode="numeric" autocomplete="tel">
           </div>
-          <div>
+          <div id="kakao-wrap">
             <label class="flabel" for="inp-kakao">카카오톡 ID <span class="sub">(선택)</span></label>
             <input class="input-field" type="text" id="inp-kakao" maxlength="30" placeholder="예) onlycar123"
                    autocomplete="off" autocapitalize="off" spellcheck="false">
             <p class="contact-hint">번호로 친구 추가가 안 될 때 ID로 찾아 견적을 보내드립니다.</p>
           </div>
           <div>
-            <label class="flabel" for="inp-email">이메일 주소 <span class="sub">(선택)</span></label>
+            <label class="flabel" for="inp-email">이메일 주소 <span class="sub" id="email-sub">(선택)</span></label>
             <input class="input-field" type="email" id="inp-email" maxlength="80" placeholder="example@email.com"
                    autocomplete="email" inputmode="email">
-            <p class="contact-hint">적어 주시면 견적서 파일을 이메일로도 함께 보내드립니다.</p>
+            <p class="contact-hint" id="email-hint">적어 주시면 견적서 파일을 이메일로도 함께 보내드립니다.</p>
           </div>
           <div class="kakao-note">
             <b>남겨주신 번호로 전화는 드리지 않습니다.</b><br>
-            견적서는 카카오톡으로 보내드립니다. 낯선 계정의 메시지가 보이면
-            「온니카톡」 견적인지 확인하고 열어 주세요.
+            <span id="reply-note"></span>
           </div>
         </div>
 
@@ -357,6 +385,7 @@
 
         <p style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px">신청 내용 확인</p>
         <div class="summary-card">
+          <div class="sum-row"><span class="sum-key">회신 방법</span><span class="sum-val" id="sum-reply">-</span></div>
           <div class="sum-row"><span class="sum-key">고객 구분</span><span class="sum-val" id="sum-custtype">-</span></div>
           <div class="sum-row"><span class="sum-key">상품 종류</span><span class="sum-val" id="sum-product">-</span></div>
           <div class="sum-row"><span class="sum-key">차량</span><span class="sum-val" id="sum-car">-</span></div>
@@ -382,9 +411,9 @@
       <div class="suc-icon" style="background:none"><img src="assets/logo-mark.svg" alt="" width="64" height="64"></div>
       <h2>견적 신청이 완료됐어요!</h2>
       <p>
-        남겨주신 번호의 카카오톡으로<br>
+        <span id="suc-where">남겨주신 번호의 카카오톡으로</span><br>
         <strong>영업일 기준 1일 이내</strong>에 맞춤 견적서를 보내드릴게요.<br><br>
-        전화는 드리지 않습니다. 카톡만 확인해 주세요.
+        전화는 드리지 않습니다. <span id="suc-check">카톡만 확인해 주세요.</span>
       </p>
       <p class="sub-note">온니카톡 &middot; 견적은 오직 카톡으로</p>
       <div class="btn-row center" style="margin-top:26px;justify-content:center">
@@ -411,6 +440,7 @@
       <nav class="ft-nav">
         <a href="index.html#picker">차량 보기</a>
         <a href="products.html">상품안내</a>
+        <a href="lowcredit.html">저신용자 전용</a>
         <a href="index.html#how">이용 방법</a>
         <a href="quote.html">카톡 견적 받기</a>
       </nav>
@@ -472,6 +502,7 @@ const state = {
   extCustom: [],       // 추가 옵션 (직접 입력)
   prepay: "", deposit: "", period: "", periodCustom: false, km: "",
   maintenance: "",
+  reply: "카카오톡",   // 회신 방법 — 카카오톡 / 문자 / 이메일
 
   /* 직접 입력 — 가격표에 없는 차(수입차 · 다른 브랜드) */
   isOther: false,
@@ -731,6 +762,42 @@ function selCard(el, grpId, key) {
   state[key] = el.querySelector(".ct").textContent.trim();
 }
 
+/* ── 회신 방법 (카카오톡 / 문자 / 이메일) ─────── */
+const REPLY = {
+  "카카오톡": {
+    phone: "카카오톡 받을 휴대폰 번호",
+    note: "견적서는 카카오톡으로 보내드립니다. 낯선 계정의 메시지가 보이면 「온니카톡」 견적인지 확인하고 열어 주세요.",
+    btn: "카톡으로 견적 받기", where: "남겨주신 번호의 카카오톡으로", check: "카톡만 확인해 주세요."
+  },
+  "문자": {
+    phone: "문자 받을 휴대폰 번호",
+    note: "견적서는 문자로 보내드립니다. 「온니카톡」 이름으로 온 문자인지 확인하고 열어 주세요.",
+    btn: "문자로 견적 받기", where: "남겨주신 번호의 문자로", check: "문자만 확인해 주세요."
+  },
+  "이메일": {
+    phone: "휴대폰 번호",
+    note: "견적서는 이메일로 보내드립니다. 메일이 보이지 않으면 스팸함도 확인해 주세요.",
+    btn: "이메일로 견적 받기", where: "남겨주신 이메일 주소로", check: "메일함만 확인해 주세요."
+  }
+};
+
+function applyReply() {
+  const r = REPLY[state.reply] || REPLY["카카오톡"];
+  const byMail = state.reply === "이메일";
+  document.getElementById("phone-label").textContent = r.phone;
+  document.getElementById("reply-note").textContent = r.note;
+  document.getElementById("kakao-wrap").style.display = state.reply === "카카오톡" ? "" : "none";
+  document.getElementById("email-sub").innerHTML = byMail ? '<span style="color:#C0392B">*</span>' : "(선택)";
+  document.getElementById("email-hint").textContent = byMail
+    ? "이 주소로 견적서를 보내드립니다."
+    : "적어 주시면 견적서 파일을 이메일로도 함께 보내드립니다.";
+  document.getElementById("submit-btn").innerHTML = r.btn + " &rarr;";
+  document.getElementById("suc-where").textContent = r.where;
+  document.getElementById("suc-check").textContent = r.check;
+  const sum = document.getElementById("sum-reply");
+  if (sum) sum.textContent = state.reply;
+}
+
 /* ── 계약 기간 ─────────────────────────────── */
 const PERIODS = ["24개월", "36개월", "48개월", "60개월", "미정", "직접입력"];
 
@@ -852,6 +919,7 @@ function buildSummary() {
   show("row-price", !state.isOther);
   show("row-color", !state.isOther);
 
+  document.getElementById("sum-reply").textContent = state.reply;
   document.getElementById("sum-custtype").textContent = state.custType || "-";
   document.getElementById("sum-product").textContent = state.product || "-";
   document.getElementById("sum-car").textContent    = carLabel() || "-";
@@ -875,11 +943,12 @@ function validateAll() {
     if (err) { showToast(err); render(i); return false; }
   }
   const phone = document.getElementById("inp-phone").value.trim();
-  if (!phone) { showToast("카카오톡 받을 휴대폰 번호를 입력해 주세요"); return false; }
+  if (!phone) { showToast("휴대폰 번호를 입력해 주세요"); return false; }
   if (!/^01\d-\d{3,4}-\d{4}$/.test(phone)) { showToast("올바른 휴대폰 번호를 입력해 주세요"); return false; }
-  const kakao = document.getElementById("inp-kakao").value.trim();
+  const kakao = state.reply === "카카오톡" ? document.getElementById("inp-kakao").value.trim() : "";
   if (kakao && /\s/.test(kakao)) { showToast("카카오톡 ID에는 띄어쓰기를 넣을 수 없어요"); return false; }
   const email = document.getElementById("inp-email").value.trim();
+  if (state.reply === "이메일" && !email) { showToast("견적서를 받을 이메일 주소를 입력해 주세요"); return false; }
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast("올바른 이메일 주소를 입력해 주세요"); return false; }
   if (!document.getElementById("agree").checked) { showToast("개인정보 수집·이용에 동의해 주세요"); return false; }
   return true;
@@ -902,7 +971,7 @@ function buildDetail(p) {
       ];
 
   return [
-    "[온니카톡 견적 신청 — 카톡으로 회신]",
+    "[온니카톡 견적 신청 — " + p.noti_method + "(으)로 회신]",
     "신청일시   : " + p.submit_time,
     "",
     "── 신청자",
@@ -910,7 +979,8 @@ function buildDetail(p) {
     "휴대폰     : " + p.phone,
     "카톡 ID    : " + p.kakao_id,
     "이메일     : " + (p.email || "-"),
-    "회신 방법  : 카카오톡 (전화 금지)" + (p.email ? " + 이메일로 견적서 함께 발송" : ""),
+    "회신 방법  : " + p.noti_method + " (전화 금지)" +
+      (p.email && p.noti_method !== "이메일" ? " + 이메일로 견적서 함께 발송" : ""),
     "유입경로   : " + p.lead_source,
     "고객구분   : " + p.biz_type,
     "상품종류   : " + p.product_type,
@@ -945,7 +1015,7 @@ async function submitForm() {
     customer_name:    name,
     company:          name,
     phone:            document.getElementById("inp-phone").value.trim(),
-    kakao_id:         document.getElementById("inp-kakao").value.trim() || "-",
+    kakao_id:         (state.reply === "카카오톡" && document.getElementById("inp-kakao").value.trim()) || "-",
     email:            document.getElementById("inp-email").value.trim(),   // 선택 — 비어 있을 수 있다
     lead_source:      (typeof octSourceLabel === "function" ? octSourceLabel() : "-"),
     biz_type:         state.custType,
@@ -965,11 +1035,11 @@ async function submitForm() {
     period:           state.period,
     km:               state.km,
     care:             state.maintenance,
-    memo:             "카카오톡으로만 회신 (전화 금지)"
+    memo:             state.reply + "(으)로 회신 (전화 금지)"
   };
   params.customer_phone = params.phone;
   params.customer_email = params.email || "-";
-  params.noti_method    = "카카오톡";
+  params.noti_method    = state.reply;
   params.quote_detail   = buildDetail(params);
   params.message        = params.quote_detail;
 
@@ -1006,6 +1076,7 @@ document.addEventListener("keydown", e => {
 });
 
 renderPeriods();
+applyReply();
 document.querySelectorAll("#period-grp .chip").forEach(el => { el.tabIndex = 0; el.setAttribute("role", "button"); });
 
 /* ================================================

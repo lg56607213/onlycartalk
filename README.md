@@ -20,6 +20,8 @@ onlycartalk/
 │   ├─ index.html              홈 (차량 카드 · 이용 방법 · 상품 요약)
 │   ├─ products.html           상품안내 (장기렌트 / 리스 / 할부 비교 · 계약 조건)
 │   ├─ quote.html              카톡 견적 받기 (5단계 폼)
+│   ├─ lowcredit.html          저신용자 전용 장기렌트 (추천받기 폼)
+│   ├─ lowcredit-data.js       저신용자 전용 가능 차종 예시 (직접 고치는 데이터 파일)
 │   ├─ 404.html
 │   ├─ car-data.js             차량 데이터 (자동 생성 — 직접 고치지 말 것)
 │   └─ assets/
@@ -46,7 +48,19 @@ onlycartalk/
 
 홈의 차량 카드를 누르면 `quote.html?brand=..&cat=..&model=..` 로 넘어가 1단계가 미리 채워집니다.
 
+## 저신용자 전용 장기렌트 (`/lowcredit`)
+
+에이스렌트카 보유 차량으로 운영하는 저신용자 전용 상품 페이지입니다. 신차 견적과 입구가 따로 있습니다.
+
+- 페이지: `site/lowcredit.html` — 버튼 선택 4개 + 휴대폰 번호 + 전용 동의 문구
+- 접수: 신차 견적과 같은 `POST /api/quote`. `kind: "lowcredit"` 로 구분하며 메일 제목이 **`[온니카톡 저신용 전용] …`** 으로 들어옵니다. (EmailJS 예비 경로는 쓰지 않습니다)
+- 가능 차종 예시: **`site/lowcredit-data.js` 하나만 고치면 됩니다.** 실제 차종 · 금액을 넣은 뒤 `placeholder: false` 로 바꾸면 「임시 표시」 안내가 사라집니다.
+- 전환 구분: 완료 시 `octLowCreditConversion()` 호출 (네이버 전환 유형 `OCT_LOWCREDIT_CNV_TYPE`, `dataLayer` 이벤트 `lowcredit_submit`), 완료 화면 주소는 `/lowcredit#done`
+- 표현 규칙: 「무심사」 「무조건 승인」 「100% 가능」 은 쓰지 않고 「자체 심사」 「당일 회신」 을 씁니다. 플릿케어 링크는 넣지 않습니다.
+
 ## 자주 하는 작업
+
+> 홈 카톡 예시의 「월 ○○만원」 은 일부러 금액을 넣지 않습니다. 샘플 견적은 고객이 요청하면 운영자가 카톡 · 이메일로 따로 보냅니다.
 
 ### 카카오톡 채널 연결하기
 

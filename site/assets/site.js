@@ -53,7 +53,8 @@ var OCT_KAKAO_CHANNEL = "";
   var here = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.gnb a').forEach(function (a) {
     var href = (a.getAttribute('href') || '').split('/').pop();
-    if (href && href === here) a.classList.add('on');
+    // 배포 환경에서는 /lowcredit 처럼 .html 없이 열린다
+    if (href && (href === here || href === here + '.html')) a.classList.add('on');
   });
 })();
 
@@ -149,7 +150,7 @@ function octSourceLabel() {
   OCT_TRACK_KEYS.forEach(function (k) { if (q.get(k)) keep.set(k, q.get(k)); });
   var qs = keep.toString();
   if (!qs) return;
-  document.querySelectorAll('a[href$="quote.html"]').forEach(function (a) {
+  document.querySelectorAll('a[href$="quote.html"], a[href$="lowcredit.html"]').forEach(function (a) {
     var href = a.getAttribute('href');
     if (href.indexOf('?') === -1) a.setAttribute('href', href + '?' + qs);
   });
@@ -180,12 +181,31 @@ function fmtPhone(el) {
    wcs.trans 는 장바구니·구매 전환용이라 이 호출을 전환으로 세지 않는다.
    반드시 wcs.cnv 로 값을 만들어 wcs_do 에 넘겨야 한다.
    ================================================ */
-function octConversion(value) {
+function octConversion(value, type) {
   try {
     if (!window.wcs) return;                          // 스크립트 차단·오프라인 대비
     if (!window.wcs_add || !wcs_add["wa"]) return;    // 인증키 미설정이면 조용히 넘어간다
     if (!window._nasa) window._nasa = {};
-    _nasa["cnv"] = wcs.cnv("2", String(value == null ? 0 : value));
+    _nasa["cnv"] = wcs.cnv(String(type || "2"), String(value == null ? 0 : value));
     wcs_do(_nasa);
+  } catch (e) {}
+}
+
+/* ================================================
+   저신용자 전용 폼 제출 완료 — 신차 견적과 따로 집계한다
+   ------------------------------------------------
+   구분 방법 세 가지를 함께 남긴다.
+     1) 네이버 전환 유형을 신차 견적("2")과 다른 값으로 보고한다 (아래 OCT_LOWCREDIT_CNV_TYPE)
+     2) dataLayer / gtag 에 lowcredit_submit 이벤트를 넣는다 (GA · GTM 을 붙이면 바로 쓸 수 있다)
+     3) 완료 화면 주소가 /lowcredit#done 으로 바뀐다 (화면 id: lowcredit-done)
+   ================================================ */
+var OCT_LOWCREDIT_CNV_TYPE = "5";   // 네이버 전환 유형 — 광고 계정의 전환 설정에 맞춰 바꾼다
+
+function octLowCreditConversion() {
+  octConversion(0, OCT_LOWCREDIT_CNV_TYPE);
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'lowcredit_submit', form: 'lowcredit' });
+    if (typeof window.gtag === 'function') window.gtag('event', 'lowcredit_submit');
   } catch (e) {}
 }

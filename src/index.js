@@ -1,5 +1,6 @@
 // 온니카톡 Worker
 //   POST /api/quote  견적 신청을 받아 운영자 메일로 보낸다 (Cloudflare Email Routing)
+//                    kind: "lowcredit" 이면 저신용자 전용 접수 — 제목이 [온니카톡 저신용 전용] 이 된다
 //   그 외            site/ 의 정적 파일
 //
 // 메일은 Cloudflare Email Routing 의 '인증된 수신 주소'로만 보낼 수 있다 (무료).
@@ -48,6 +49,11 @@ async function handleQuote(request, env, url) {
   const detail = str(p.quote_detail, MAX_DETAIL);
   if (!detail) return json({ ok: false, error: '신청 내용이 비어 있습니다.' }, 400);
 
+  // 구분값 — 저신용자 전용 폼(lowcredit.html)은 kind: "lowcredit" 로 들어온다
+  const lowCredit = str(p.kind, 20) === 'lowcredit';
+  // 회신 방법 — 고객이 고른 값 (카카오톡 / 문자 / 이메일). 그 외 값은 카카오톡으로 본다.
+  const reply = ['카카오톡', '문자', '이메일'].includes(str(p.noti_method, 10)) ? str(p.noti_method, 10) : '카카오톡';
+  if (reply === '이메일' && !email) return json({ ok: false, error: '이메일 주소를 확인해 주세요.' }, 400);
   const name = oneLine(str(p.customer_name, 40)) || '-';
   const car = oneLine(str(p.car_full, 120)) || '-';
 
@@ -58,8 +64,10 @@ async function handleQuote(request, env, url) {
       fromName: env.MAIL_FROM_NAME || '온니카톡',
       to: env.MAIL_TO,
       replyTo: email,
-      subject: `[온니카톡 견적] ${name} / ${car}`,
-      html: mailHtml({ name, car, phone, kakao: oneLine(str(p.kakao_id, 30)) || '-', email: email || '-', detail }),
+      subject: lowCredit
+        ? `[온니카톡 저신용 전용] ${phone} / ${car.replace(/^\[저신용 전용\]\s*/, '')}`
+        : `[온니카톡 견적] ${name} / ${car}`,
+      html: mailHtml({ lowCredit, reply, name, car, phone, kakao: oneLine(str(p.kakao_id, 30)) || '-', email: email || '-', detail }),
     });
     await env.MAILER.send(new EmailMessage(env.MAIL_FROM, env.MAIL_TO, raw));
     return json({ ok: true });
@@ -80,15 +88,17 @@ function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function mailHtml({ name, car, phone, kakao, email, detail }) {
+function mailHtml({ lowCredit, reply, name, car, phone, kakao, email, detail }) {
   const row = (k, v) =>
     `<tr><th style="width:110px;text-align:left;padding:8px 10px;background:#f5f5f5;border-bottom:1px solid #e5e5e5;font-weight:700">${esc(k)}</th><td style="padding:8px 10px;border-bottom:1px solid #e5e5e5">${esc(v)}</td></tr>`;
   return `<!doctype html><html><body style="margin:0;padding:24px;background:#ffffff;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;font-size:14px">
 <div style="max-width:620px;margin:0 auto;border-top:4px solid #F2C230">
-<h1 style="font-size:18px;margin:18px 0 6px">온니카톡 견적 신청</h1>
-<p style="margin:0 0 16px;color:#444">카카오톡으로 회신해 주세요. 전화는 걸지 않습니다.</p>
+<h1 style="font-size:18px;margin:18px 0 6px">${lowCredit ? '온니카톡 저신용 전용 — 차량 추천 요청' : '온니카톡 견적 신청'}</h1>
+<p style="margin:0 0 16px;color:#444"><b>${esc(reply)}</b>(으)로 회신해 주세요. 전화는 걸지 않습니다.</p>
 <table style="width:100%;border-collapse:collapse;border-top:2px solid #1a1a1a;font-size:14px">
-${row('이름/상호', name)}${row('휴대폰', phone)}${row('카톡 ID', kakao)}${row('이메일', email)}${row('차량', car)}
+${lowCredit
+    ? `${row('구분', '저신용 전용')}${row('휴대폰', phone)}${row('조건', car)}`
+    : `${row('회신 방법', reply)}${row('이름/상호', name)}${row('휴대폰', phone)}${row('카톡 ID', kakao)}${row('이메일', email)}${row('차량', car)}`}
 </table>
 <pre style="margin:18px 0 0;padding:14px 16px;background:#f8f9fb;border:1px solid #e5e8ee;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-all">${esc(detail)}</pre>
 <p style="margin:24px 0 0;color:#888;font-size:12px">onlycartalk.com 견적 폼에서 자동으로 보낸 메일입니다.</p>

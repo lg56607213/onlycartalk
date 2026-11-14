@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>저신용자 전용 장기렌트 | 온니카톡</title>
+<meta name="description" content="저신용자 전용 장기렌트. 연체 이력, 개인회생 진행 중, 신용점수가 낮은 분도 상담할 수 있습니다. 조건만 알려주시면 자체 심사 후 가능한 차량을 카카오톡으로 보내드립니다.">
+<meta property="og:title" content="저신용자 전용 장기렌트 | 온니카톡">
+<meta property="og:description" content="다른 곳에서 부결되셨다면, 조건만 알려주세요. 가능한 차량을 카톡으로 보내드립니다.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/quote.css">
+<style>
+  body { background: #fff; }
+
+  /* 상단 */
+  .lc-hero { background: #191919; color: #fff; border-bottom: 3px solid #F2C230; }
+  .lc-hero-in { padding-top: 56px; padding-bottom: 52px; }
+  .lc-tag {
+    display: inline-block; padding: 6px 14px; border-radius: 100px;
+    background: rgba(242,194,48,.14); border: 1px solid rgba(242,194,48,.38);
+    color: #F2C230; font-size: 12.5px; font-weight: 700; margin-bottom: 18px;
+  }
+  .lc-hero h1 { font-size: 40px; font-weight: 800; line-height: 1.25; letter-spacing: -.035em; word-break: keep-all; }
+  .lc-hero h1 em { font-style: normal; color: #F2C230; }
+  .lc-sub { margin: 16px 0 0; font-size: 17px; line-height: 1.75; color: #D5D9E0; max-width: 34em; word-break: keep-all; }
+  .lc-who { margin: 12px 0 28px; font-size: 14.5px; line-height: 1.75; color: #9AA1AD; word-break: keep-all; }
+  .lc-who b { color: #F2C230; font-weight: 700; }
+  .lc-hero .btn-row { margin-top: 0; }
+  .lc-points { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 34px; }
+  .lc-points li {
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 11px; padding: 16px 17px;
+  }
+  .lc-points b { display: block; font-size: 15px; color: #fff; margin-bottom: 4px; word-break: keep-all; }
+  .lc-points span { font-size: 13px; color: #9AA1AD; line-height: 1.65; word-break: keep-all; }
+  @media (max-width: 860px) {
+    .lc-hero-in { padding-top: 40px; padding-bottom: 40px; }
+    .lc-hero h1 { font-size: 29px; }
+    .lc-sub { font-size: 15.5px; }
+    .lc-points { grid-template-columns: 1fr; gap: 9px; margin-top: 26px; }
+  }
+
+  /* 폼 */
+  .lc-form-sec { background: #F5F6F8; padding: 48px 16px 60px; scroll-margin-top: 64px; }
+  .lc-form-sec .qcard { margin: 0 auto; }
+  .lc-q { margin-bottom: 24px; }
+  .lc-q .flabel { font-size: 14px; color: #191919; margin-bottom: 10px; }
+  .lc-q .flabel i { font-style: normal; color: #B07D20; margin-right: 6px; font-variant-numeric: tabular-nums; }
+  .lc-opts { display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); }
+  .lc-opts.two { grid-template-columns: repeat(2, 1fr); }
+  .lc-opts.four { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 520px) { .lc-opts.four { grid-template-columns: repeat(2, 1fr); } }
+  .lc-opt {
+    min-height: 50px; padding: 12px 8px; border-radius: 10px; border: 1px solid #DADDE5;
+    background: #fff; color: #374151; font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .15s; word-break: keep-all; line-height: 1.35;
+  }
+  .lc-opt:hover { border-color: #F2C230; color: #191919; }
+  .lc-opt[aria-pressed="true"] { background: #191919; border-color: #191919; color: #F2C230; font-weight: 800; }
+  .lc-hint { font-size: 12px; color: #8A94A6; margin-top: 8px; line-height: 1.65; }
+  .lc-q .input-field { font-size: 16px; padding: 14px; }
+
+  .lc-consent {
+    background: #F8F9FB; border: 1px solid #EAECF0; border-radius: 12px;
+    padding: 16px 18px; margin-top: 4px;
+  }
+  .lc-consent h3 { font-size: 13px; font-weight: 800; color: #191919; margin-bottom: 10px; }
+  .lc-consent dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 12.5px; line-height: 1.65; }
+  .lc-consent dt { color: #8A94A6; white-space: nowrap; }
+  .lc-consent dd { color: #4B5563; word-break: keep-all; }
+  .lc-consent p { margin-top: 10px; font-size: 12px; color: #8A94A6; line-height: 1.65; word-break: keep-all; }
+  .lc-consent .agree-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid #EAECF0; }
+  .lc-consent .agree-row input { width: 18px; height: 18px; }
+  .lc-consent .agree-row span { font-size: 13.5px; color: #191919; font-weight: 700; }
+  .lc-consent .agree-row em { font-style: normal; color: #C0392B; }
+
+  /* 차종 예시 */
+  .lc-temp {
+    margin: 0 0 20px; padding: 12px 16px; border-radius: 10px;
+    background: #FFFBD6; border: 1px solid #F2E48A; color: #3C1E1E;
+    font-size: 13px; line-height: 1.7; word-break: keep-all;
+  }
+  .lc-cars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .lc-cars { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+  .lc-car { background: #fff; border: 1px solid #E5E8EE; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .lc-car .pic {
+    position: relative; aspect-ratio: 16 / 9; background: #fff; border-bottom: 1px solid #EEF1F5;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .lc-car .pic img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+  .lc-car .pic img.ph { width: 46%; height: auto; opacity: .22; padding: 0; }
+  .lc-car .temp-badge {
+    position: absolute; top: 10px; left: 10px; padding: 4px 9px; border-radius: 5px;
+    background: #4B5563; color: #fff; font-size: 11px; font-weight: 800;
+  }
+  .lc-car .body { padding: 14px 16px 16px; }
+  .lc-car .brand { font-size: 11.5px; font-weight: 700; color: #8A94A6; }
+  .lc-car h3 { font-size: 16.5px; font-weight: 800; color: #191919; margin: 3px 0 2px; }
+  .lc-car .note { font-size: 12px; color: #6B7280; min-height: 0; }
+  .lc-car dl {
+    display: grid; grid-template-columns: 1fr auto; gap: 7px 10px;
+    margin-top: 12px; padding-top: 12px; border-top: 1px dashed #E5E8EE; font-size: 13px;
+  }
+  .lc-car dt { color: #6B7280; }
+  .lc-car dd { font-weight: 800; color: #191919; font-variant-numeric: tabular-nums; }
+  .lc-basis { margin-top: 16px; font-size: 12.5px; color: #8A94A6; line-height: 1.7; }
+
+  /* 진행 순서 */
+  .lc-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .lc-flow { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .lc-flow { grid-template-columns: 1fr; } }
+  .lc-flow > div { background: #fff; border: 1px solid #E5E8EE; border-radius: 14px; padding: 22px 20px; }
+  .lc-flow .no {
+    width: 32px; height: 32px; border-radius: 9px; background: #F2C230; color: #191919;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; margin-bottom: 13px;
+  }
+  .lc-flow h3 { font-size: 15.5px; font-weight: 800; color: #191919; margin-bottom: 6px; word-break: keep-all; }
+  .lc-flow p { font-size: 13px; color: #6B7280; line-height: 1.7; word-break: keep-all; }
+
+  /* 고지 사항 */
+  .lc-notice { background: #F5F6F8; padding: 40px 0 48px; border-top: 1px solid #E5E8EE; }
+  .lc-notice h2 { font-size: 16px; font-weight: 800; color: #191919; margin-bottom: 14px; }
+
+  .sec-head { text-align: left; }
+  .sec .btn-row { margin-top: 26px; }
+</style>
+</head>
+<body class="has-bar">
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p>접수 중...</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<header class="site-header">
+  <div class="wrap hd">
+    <a class="logo" href="index.html"><img src="assets/logo-mark.svg" alt="" width="30" height="30"><b>온니<i>카톡</i></b></a>
+    <button class="burger" type="button" aria-label="메뉴" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="gnb">
+      <a href="index.html#picker">차량 보기</a>
+      <a href="products.html">상품안내</a>
+      <a href="lowcredit.html">저신용자 전용</a>
+      <a href="index.html#how">이용 방법</a>
+      <a class="hd-cta" href="quote.html">카톡 견적 받기</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== 상단 ===== -->
+<section class="lc-hero">
+  <div class="wrap lc-hero-in">
+    <span class="lc-tag">에이스렌트카 보유 차량 · 현대 · 기아</span>
+    <h1><em>저신용자 전용</em> 장기렌트</h1>
+    <p class="lc-sub">다른 곳에서 부결되셨다면, 조건만 알려주세요. 가능한 차량을 카톡으로 보내드립니다.</p>
+    <p class="lc-who"><b>연체 이력</b>, <b>개인회생 진행 중</b>, <b>신용점수가 낮은 분</b>도 상담 가능</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="#form">내 조건에 맞는 차량 추천받기</a>
+      <a class="btn btn-line" href="#cars">가능 차종 예시 보기</a>
+    </div>
+    <ul class="lc-points">
+      <li><b>보유 차량 직접 운영</b><span>중개가 아니라, 보유한 차량을 직접 빌려드립니다</span></li>
+      <li><b>자체 심사로 당일 회신</b><span>영업일 기준 당일 안에 가능 차량을 알려드립니다</span></li>
+      <li><b>전화 없이 카톡으로만 진행</b><span>남겨주신 번호로 전화하지 않습니다</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 추천받기 폼 ===== -->
+<section class="lc-form-sec" id="form">
+  <div class="qcard">
+
+    <div id="form-wrap">
+      <div class="form-header">
+        <h1>내 조건에 맞는 <span>차량 추천받기</span></h1>
+        <p>버튼 네 번과 휴대폰 번호면 끝납니다. 30초면 됩니다.</p>
+      </div>
+
+      <div class="lc-q">
+        <span class="flabel" id="lb-monthly"><i>1</i>월 납입 가능 금액</span>
+        <div class="lc-opts" data-key="monthly" role="group" aria-labelledby="lb-monthly">
+          <button type="button" class="lc-opt">40만 원대</button>
+          <button type="button" class="lc-opt">50만 원대</button>
+          <button type="button" class="lc-opt">60만 원 이상</button>
+        </div>
+      </div>
+
+      <div class="lc-q">
+        <span class="flabel" id="lb-deposit"><i>2</i>준비 가능한 보증금</span>
+        <div class="lc-opts" data-key="deposit" role="group" aria-labelledby="lb-deposit">
+          <button type="button" class="lc-opt">100만 원 이하</button>
+          <button type="button" class="lc-opt">100~300만 원</button>
+          <button type="button" class="lc-opt">300만 원 이상</button>
+        </div>
+      </div>
+
+      <div class="lc-q">
+        <span class="flabel" id="lb-income"><i>3</i>소득 형태</span>
+        <div class="lc-opts four" data-key="income" role="group" aria-labelledby="lb-income">
+          <button type="button" class="lc-opt">직장인</button>
+          <button type="button" class="lc-opt">사업자</button>
+          <button type="button" class="lc-opt">프리랜서</button>
+          <button type="button" class="lc-opt">기타</button>
+        </div>
+      </div>
+
+      <div class="lc-q">
+        <span class="flabel" id="lb-status"><i>4</i>현재 상황</span>
+        <div class="lc-opts two" data-key="status" role="group" aria-labelledby="lb-status">
+          <button type="button" class="lc-opt">해당 없음</button>
+          <button type="button" class="lc-opt">연체 이력</button>
+          <button type="button" class="lc-opt">개인회생·파산 진행 중</button>
+          <button type="button" class="lc-opt">잘 모르겠음</button>
+        </div>
+        <p class="lc-hint">정확히 모르셔도 됩니다. 「잘 모르겠음」을 고르시면 카톡으로 확인해 드립니다.</p>
+      </div>
+
+      <div class="lc-q">
+        <label class="flabel" for="inp-phone"><i>5</i>카톡 받을 휴대폰 번호</label>
+        <input type="text" id="oct-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <input class="input-field" type="tel" id="inp-phone" placeholder="010-0000-0000"
+               oninput="fmtPhone(this)" maxlength="13" inputmode="numeric" autocomplete="tel">
+        <p class="lc-hint">이 번호의 카카오톡으로만 연락드립니다. 전화는 드리지 않습니다.</p>
+      </div>
+
+      <!-- 6. 개인정보 수집·이용 동의 — 신용 관련 정보를 받으므로 이 페이지 전용 문구 -->
+      <div class="lc-consent">
+        <h3>개인정보 수집 · 이용 동의 (저신용자 전용 상담)</h3>
+        <dl>
+          <dt>수집 항목</dt>
+          <dd>휴대폰 번호, 월 납입 가능 금액, 준비 가능한 보증금, 소득 형태, 현재 상황(연체 이력 · 개인회생 · 파산 진행 여부 — 본인이 선택한 내용)</dd>
+          <dt>이용 목적</dt>
+          <dd>저신용자 전용 장기렌트 가능 차량 안내, 자체 심사 가능 여부 확인, 카카오톡 상담</dd>
+          <dt>보관 기간</dt>
+          <dd>접수일로부터 1년. 삭제를 요청하시면 바로 지웁니다.</dd>
+        </dl>
+        <p>동의하지 않으실 수 있습니다. 다만 동의하지 않으시면 차량 추천을 받으실 수 없습니다. 이 단계에서는 신용조회를 하지 않으며, 심사에 필요한 서류와 조회는 진행 전에 카톡으로 따로 안내하고 동의를 받습니다.</p>
+        <label class="agree-row">
+          <input type="checkbox" id="agree">
+          <span><em>(필수)</em> 위 내용을 확인했고, 개인정보 수집 · 이용에 동의합니다.</span>
+        </label>
+      </div>
+
+      <button class="btn-submit" id="submit-btn" type="button" onclick="submitLowCredit()" style="margin-top:20px">내 조건에 맞는 차량 추천받기</button>
+      <p class="lc-hint" style="text-align:center">심사 결과에 따라 추천 차량과 조건이 달라질 수 있습니다.</p>
+    </div>
+
+    <!-- 접수 완료 — 저신용 전용 전환 화면 (신차 견적 완료 화면과 구분) -->
+    <div class="success-wrap" id="lowcredit-done" data-conversion="lowcredit">
+      <div class="suc-icon" style="background:none"><img src="assets/logo-mark.svg" alt="" width="64" height="64"></div>
+      <h2>접수되었습니다.</h2>
+      <p>
+        <strong>영업일 기준 당일 안에</strong> 카톡으로 가능 차량을 보내드립니다.<br><br>
+        전화는 드리지 않습니다. 카톡만 확인해 주세요.
+      </p>
+      <p class="sub-note">온니카톡 &middot; 저신용자 전용 장기렌트</p>
+      <div class="btn-row center" style="margin-top:26px;justify-content:center">
+        <a class="btn btn-gold" href="#" data-kakao="home" hidden>카톡 채널 추가하기</a>
+        <a class="btn btn-line-navy" href="index.html">홈으로</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 가능 차종 예시 ===== -->
+<section class="sec" id="cars" style="scroll-margin-top:64px">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>가능 차종 예시</h2>
+      <p>에이스렌트카가 보유한 현대 · 기아 차량입니다. 조건에 따라 가능한 차량을 2~3대 골라 카톡으로 보내드립니다.</p>
+    </div>
+    <p class="lc-temp" id="lc-temp" hidden><b>임시 표시입니다.</b> 아래 차종과 금액은 확정 전 자리 표시이며, 실제 가능 차종 · 보증금 · 월 납입금은 카톡으로 안내해 드립니다.</p>
+    <div class="lc-cars" id="lc-cars"></div>
+    <p class="lc-basis" id="lc-basis"></p>
+    <div class="btn-row">
+      <a class="btn btn-navy" href="#form">내 조건에 맞는 차량 추천받기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 진행 순서 ===== -->
+<section class="sec tint" id="steps" style="scroll-margin-top:64px">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>이렇게 진행됩니다</h2>
+      <p>처음부터 끝까지 카톡으로 이어집니다.</p>
+    </div>
+    <div class="lc-flow">
+      <div>
+        <div class="no">1</div>
+        <h3>조건 선택</h3>
+        <p>월 납입 가능 금액, 보증금, 소득 형태, 현재 상황을 버튼으로 고릅니다.</p>
+      </div>
+      <div>
+        <div class="no">2</div>
+        <h3>카톡으로 가능 차량 2~3대 안내</h3>
+        <p>영업일 기준 당일 안에 조건에 맞는 차량과 예상 금액을 보내드립니다.</p>
+      </div>
+      <div>
+        <div class="no">3</div>
+        <h3>서류 확인 · 자체 심사</h3>
+        <p>필요한 서류를 카톡으로 안내하고, 받은 서류로 자체 심사를 진행합니다.</p>
+      </div>
+      <div>
+        <div class="no">4</div>
+        <h3>계약 · 출고</h3>
+        <p>심사 결과와 최종 조건을 확인하신 뒤 계약하고 차량을 받습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 고지 사항 ===== -->
+<section class="lc-notice">
+  <div class="wrap">
+    <h2>꼭 확인해 주세요</h2>
+    <ul class="dot">
+      <li><b>보증금, 총 납입액, 중도 해지 위약금, 연체 시 조치</b>는 계약 전에 카톡으로 안내해 드립니다. 글로 받아 확인하신 뒤 결정하시면 됩니다.</li>
+      <li>최종 조건은 <b>심사 결과에 따라 달라질 수 있습니다.</b> 이 페이지의 차종과 금액은 예시이며, 심사 결과에 따라 이용이 어려울 수 있습니다.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="ft-top">
+      <div class="ft-logo">
+        <b>온니<i>카톡</i></b>
+        <p>견적은 오직 카톡으로 · 장기렌트 · 리스 · 할부</p>
+      </div>
+      <nav class="ft-nav">
+        <a href="index.html#picker">차량 보기</a>
+        <a href="products.html">상품안내</a>
+        <a href="lowcredit.html">저신용자 전용</a>
+        <a href="index.html#how">이용 방법</a>
+        <a href="quote.html">카톡 견적 받기</a>
+      </nav>
+    </div>
+    <div class="ft-info">
+      <span class="cname">(주)제이디엔드</span><span class="sep">|</span>대표자 박동천<span class="sep br">|</span>사업자등록번호 766-86-02631<br>
+      서울특별시 영등포구 여의대방로 379, 605호<span class="sep br">|</span>대표전화 02-6925-0516<span class="sep">|</span>이메일 jdgp@jdgp.co.kr<br>
+      차량 가격은 제조사 가격표 기준이며, 실제 계약 조건은 심사 결과에 따라 달라집니다.
+      <div class="ft-copy">&copy; 2026 OnlyCartalk. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<!-- 모바일 하단 고정 -->
+<div class="mobile-bar" id="mobile-bar">
+  <a class="tel" href="#" data-kakao="chat" hidden>카톡 문의</a>
+  <a class="cta" href="#form">차량 추천받기</a>
+</div>
+
+<script src="lowcredit-data.js"></script>
+<script src="assets/site.js"></script>
+<script>
+/* ================================================
+   가능 차종 예시 — lowcredit-data.js 를 그대로 그린다
+   ================================================ */
+(function renderCars() {
+  var data = window.OCT_LOWCREDIT || { cars: [] };
+  var esc = function (s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  };
+  var PH = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60" fill="none" stroke="#191919" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M6 46v-8c0-4 6-6 16-8l12-12c2-2 5-3 8-3h22c4 0 8 2 11 5l10 10c14 1 29 4 29 10v6h-6M38 46h44M6 46h16"/>' +
+    '<circle cx="30" cy="46" r="8"/><circle cx="90" cy="46" r="8"/></svg>');
+  window.lcImgFail = function (img) { img.onerror = null; img.src = PH; img.className = "ph"; };
+
+  var temp = !!data.placeholder;
+  document.getElementById("lc-temp").hidden = !temp;
+  document.getElementById("lc-basis").textContent = data.basis || "";
+  document.getElementById("lc-cars").innerHTML = (data.cars || []).map(function (c) {
+    var img = c.img
+      ? '<img src="' + esc(c.img) + '" alt="' + esc(c.name) + '" loading="lazy" onerror="lcImgFail(this)">'
+      : '<img class="ph" src="' + PH + '" alt="">';
+    return '<div class="lc-car">' +
+      '<div class="pic">' + (temp ? '<span class="temp-badge">임시 표시</span>' : '') + img + '</div>' +
+      '<div class="body">' +
+        '<div class="brand">' + esc(c.brand) + '</div>' +
+        '<h3>' + esc(c.name) + '</h3>' +
+        (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '') +
+        '<dl><dt>보증금 예시</dt><dd>' + esc(c.deposit) + '</dd>' +
+        '<dt>월 납입금 예시</dt><dd>' + esc(c.monthly) + '</dd></dl>' +
+      '</div></div>';
+  }).join("");
+})();
+
+/* ================================================
+   접수 — 신차 견적 폼(quote.html)과 같은 경로
+   ------------------------------------------------
+   /api/quote — Cloudflare Worker(src/index.js)가 받아
+   Cloudflare Email Routing 으로 운영자 메일에 보낸다. (EmailJS 는 쓰지 않는다)
+   kind: "lowcredit" 로 구분한다 — 메일 제목이 [온니카톡 저신용 전용] 으로 들어온다.
+   ================================================ */
+async function sendQuote(params) {
+  const res = await fetch("/api/quote", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params)
+  });
+  if (!res.ok) throw new Error("접수 실패: " + res.status);
+}
+
+const lc = { monthly: "", deposit: "", income: "", status: "" };
+const LC_LABEL = {
+  monthly: "월 납입 가능 금액", deposit: "준비 가능한 보증금",
+  income: "소득 형태", status: "현재 상황"
+};
+
+document.querySelectorAll(".lc-opts").forEach(grp => {
+  const key = grp.dataset.key;
+  grp.querySelectorAll(".lc-opt").forEach(btn => {
+    btn.setAttribute("aria-pressed", "false");
+    btn.addEventListener("click", () => {
+      grp.querySelectorAll(".lc-opt").forEach(b => b.setAttribute("aria-pressed", "false"));
+      btn.setAttribute("aria-pressed", "true");
+      lc[key] = btn.textContent.trim();
+    });
+  });
+});
+
+function validateLowCredit() {
+  for (const key of Object.keys(LC_LABEL)) {
+    if (!lc[key]) {
+      showToast(LC_LABEL[key] + "을(를) 선택해 주세요");
+      document.querySelector('.lc-opts[data-key="' + key + '"]').scrollIntoView({ behavior: "smooth", block: "center" });
+      return false;
+    }
+  }
+  const phone = document.getElementById("inp-phone").value.trim();
+  if (!phone) { showToast("카톡 받을 휴대폰 번호를 입력해 주세요"); document.getElementById("inp-phone").focus(); return false; }
+  if (!/^01\d-\d{3,4}-\d{4}$/.test(phone)) { showToast("올바른 휴대폰 번호를 입력해 주세요"); document.getElementById("inp-phone").focus(); return false; }
+  if (!document.getElementById("agree").checked) { showToast("개인정보 수집·이용에 동의해 주세요"); return false; }
+  return true;
+}
+
+async function submitLowCredit() {
+  if (!validateLowCredit()) return;
+
+  // 허니팟: 화면에 안 보이는 칸이 채워져 있으면 봇이다. 성공한 것처럼 보이고 보내지 않는다.
+  const bot = document.getElementById("oct-hp").value;
+
+  const phone = document.getElementById("inp-phone").value.trim();
+  const brief = "월 " + lc.monthly + " / 보증금 " + lc.deposit;
+  const params = {
+    kind:            "lowcredit",                       // ← 구분값
+    submit_time:     new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+    site:            "OnlyCartalk",
+    customer_name:   "저신용 전용 접수",
+    company:         "저신용 전용 접수",
+    phone:           phone,
+    kakao_id:        "-",
+    email:           "",
+    lead_source:     (typeof octSourceLabel === "function" ? octSourceLabel() : "-"),
+    biz_type:        lc.income,
+    product_type:    "저신용자 전용 장기렌트",
+    category:        "저신용 전용",
+    car_full:        "[저신용 전용] " + brief,
+    monthly_budget:  lc.monthly,
+    deposit:         lc.deposit,
+    income_type:     lc.income,
+    credit_status:   lc.status,
+    memo:            "카카오톡으로만 회신 (전화 금지)"
+  };
+  params.customer_phone = phone;
+  params.customer_email = "-";
+  params.noti_method    = "카카오톡";
+  params.quote_detail   = [
+    "[온니카톡 저신용 전용 — 차량 추천 요청 · 카톡으로 회신]",
+    "신청일시   : " + params.submit_time,
+    "구분       : 저신용 전용",
+    "",
+    "── 신청자",
+    "휴대폰     : " + phone,
+    "회신 방법  : 카카오톡 (전화 금지)",
+    "유입경로   : " + params.lead_source,
+    "",
+    "── 조건",
+    "월 납입 가능 : " + lc.monthly,
+    "보증금 준비  : " + lc.deposit,
+    "소득 형태    : " + lc.income,
+    "현재 상황    : " + lc.status,
+    "",
+    "개인정보 수집·이용 동의 : 동의 (저신용자 전용 상담용 문구)"
+  ].join("\n");
+  params.message = params.quote_detail;
+
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  document.getElementById("loading").classList.add("show");
+
+  try {
+    if (!bot) await sendQuote(params);
+    document.getElementById("loading").classList.remove("show");
+    document.getElementById("form-wrap").style.display = "none";
+    document.getElementById("lowcredit-done").style.display = "block";
+    document.getElementById("mobile-bar").hidden = true;
+
+    // 완료 화면을 주소로도 구분한다 — /lowcredit#done
+    try { history.replaceState(null, "", location.pathname + location.search + "#done"); } catch (e) {}
+    if (!bot) octLowCreditConversion();   // 저신용 폼 제출 완료 — 신차 견적과 다른 전환
+
+    document.getElementById("form").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    document.getElementById("loading").classList.remove("show");
+    btn.disabled = false;
+    showToast("전송 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    console.error("저신용 전용 접수 오류:", err);
+  }
+}
+</script>
+<!-- 네이버 프리미엄 로그분석 (공통) -->
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript">
+if (!wcs_add) var wcs_add = {};
+wcs_add["wa"] = "";                 // TODO: onlycartalk 인증키를 넣을 것
+if (!_nasa) var _nasa = {};
+if (window.wcs && wcs_add["wa"]) {
+  wcs.inflow("onlycartalk.com");
+  wcs_do();
+}
+</script>
+</body>
+</html>
