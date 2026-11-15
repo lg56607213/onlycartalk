@@ -90,6 +90,8 @@
   /* ===== BIG SELECT CARDS (고객구분 / 상품종류 / 보험 / 정비) ===== */
   .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .card-grid.three { grid-template-columns: repeat(3, 1fr); }
+  .card-grid.one { grid-template-columns: 1fr; }
+  .card-grid.one .sel-card .cs { font-size: 12px; }
   @media (max-width: 520px) { .card-grid.three { grid-template-columns: 1fr; } }
   @media (max-width: 420px) { .card-grid { grid-template-columns: 1fr; } }
   .sel-card {

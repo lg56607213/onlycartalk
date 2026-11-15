@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="assets/style.css">
-<link rel="stylesheet" href="assets/quote.css">
+<link rel="stylesheet" href="assets/quote.css?v=2">
 <style>
   .kakao-note {
     background: #FFFBD6; border: 1px solid #F2E48A; border-radius: 10px;
@@ -71,18 +71,47 @@
 
     <!-- PROGRESS -->
     <div class="progress" id="prog">
-      <div class="ps"><div class="pd act" id="pd1">1</div><div class="pl" id="pl1"></div><div class="plb act" id="plb1">내차만들기</div></div>
-      <div class="ps"><div class="pd" id="pd2">2</div><div class="pl" id="pl2"></div><div class="plb" id="plb2">추가옵션</div></div>
-      <div class="ps"><div class="pd" id="pd3">3</div><div class="pl" id="pl3"></div><div class="plb" id="plb3">고객정보</div></div>
-      <div class="ps"><div class="pd" id="pd4">4</div><div class="pl" id="pl4"></div><div class="plb" id="plb4">계약조건</div></div>
-      <div class="ps"><div class="pd" id="pd5">5</div><div class="pl" style="display:none"></div><div class="plb" id="plb5">견적받기</div></div>
+      <div class="ps"><div class="pd act" id="pd1">1</div><div class="pl" id="pl1"></div><div class="plb act" id="plb1">상품구분</div></div>
+      <div class="ps"><div class="pd" id="pd2">2</div><div class="pl" id="pl2"></div><div class="plb" id="plb2">내차만들기</div></div>
+      <div class="ps"><div class="pd" id="pd3">3</div><div class="pl" id="pl3"></div><div class="plb" id="plb3">추가옵션</div></div>
+      <div class="ps"><div class="pd" id="pd4">4</div><div class="pl" id="pl4"></div><div class="plb" id="plb4">고객정보</div></div>
+      <div class="ps"><div class="pd" id="pd5">5</div><div class="pl" id="pl5"></div><div class="plb" id="plb5">계약조건</div></div>
+      <div class="ps"><div class="pd" id="pd6">6</div><div class="pl" style="display:none"></div><div class="plb" id="plb6">견적받기</div></div>
     </div>
 
     <div id="form-wrap">
 
-      <!-- ===== STEP 1 : 내차만들기 ===== -->
+      <!-- ===== STEP 1 : 상품구분 (mytruck 견적 폼 1단계와 같은 화면) ===== -->
       <div class="step act" id="s1">
-        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">1 / 5단계</p>
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">1 / 6단계</p>
+        <p class="sec-title">상품 구분을 선택해 주세요</p>
+        <p class="sec-desc">고객님 상황에 맞는 상품을 하나 골라주세요</p>
+
+        <div class="frow">
+          <div class="card-grid one" id="pclass-grp">
+            <div class="sel-card" onclick="selCard(this,'pclass-grp','productClass')">
+              <div class="ct">일반 캐피탈사 상품</div>
+              <div class="cs">신용 1~6등급 이내</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'pclass-grp','productClass')">
+              <div class="ct">저신용자 상품</div>
+              <div class="cs">면허증만 있으면 가능 &middot; 연체 / 신불자 / 개인회생 무관</div>
+            </div>
+            <div class="sel-card" onclick="selCard(this,'pclass-grp','productClass')">
+              <div class="ct">구조변경 / 용도변경 상품</div>
+              <div class="cs">구조변경 비용 리스료 포함 &middot; 반납 시 원상복구 제외</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-next" onclick="goStep(2)">다음 &rarr; 내 차 만들기</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 2 : 내차만들기 ===== -->
+      <div class="step" id="s2">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">2 / 6단계</p>
         <p class="sec-title">내 차 만들기</p>
         <p class="sec-desc">제조사부터 순서대로 선택해 주세요<br>수입차 · 다른 브랜드는 <b>직접 입력</b>을 선택하고 차종을 적어주세요</p>
 
@@ -158,13 +187,14 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-next" onclick="goStep(2)">다음 &rarr; 추가 옵션</button>
+          <button class="btn-prev" onclick="goStep(1)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(3)">다음 &rarr; 추가 옵션</button>
         </div>
       </div>
 
-      <!-- ===== STEP 2 : 추가옵션 ===== -->
-      <div class="step" id="s2">
-        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">2 / 5단계</p>
+      <!-- ===== STEP 3 : 추가옵션 ===== -->
+      <div class="step" id="s3">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">3 / 6단계</p>
         <p class="sec-title">추가 옵션을 선택해 주세요</p>
         <p class="sec-desc">출고 후 별도로 장착되는 항목입니다.<br>필요 없으시면 선택하지 않고 넘어가셔도 됩니다.</p>
 
@@ -192,14 +222,14 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-prev" onclick="goStep(1)">&larr; 이전</button>
-          <button class="btn-next" onclick="goStep(3)">다음 &rarr; 고객 정보</button>
+          <button class="btn-prev" onclick="goStep(2)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(4)">다음 &rarr; 고객 정보</button>
         </div>
       </div>
 
-      <!-- ===== STEP 3 : 고객정보 ===== -->
-      <div class="step" id="s3">
-        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">3 / 5단계</p>
+      <!-- ===== STEP 4 : 고객정보 ===== -->
+      <div class="step" id="s4">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">4 / 6단계</p>
         <p class="sec-title">고객 정보를 알려주세요</p>
         <p class="sec-desc">고객 구분에 따라 적용 가능한 상품과 조건이 달라집니다</p>
 
@@ -244,14 +274,14 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-prev" onclick="goStep(2)">&larr; 이전</button>
-          <button class="btn-next" onclick="goStep(4)">다음 &rarr; 계약 조건</button>
+          <button class="btn-prev" onclick="goStep(3)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(5)">다음 &rarr; 계약 조건</button>
         </div>
       </div>
 
-      <!-- ===== STEP 4 : 계약조건 ===== -->
-      <div class="step" id="s4">
-        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">4 / 5단계</p>
+      <!-- ===== STEP 5 : 계약조건 ===== -->
+      <div class="step" id="s5">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">5 / 6단계</p>
         <p class="sec-title">계약 조건을 설정해 주세요</p>
         <p class="sec-desc">정하지 못한 항목은 <b>미정</b>을 고르셔도 됩니다. 조건별로 비교해 드립니다</p>
 
@@ -318,14 +348,14 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-prev" onclick="goStep(3)">&larr; 이전</button>
-          <button class="btn-next" onclick="goStep(5)">다음 &rarr; 견적 받을 방법</button>
+          <button class="btn-prev" onclick="goStep(4)">&larr; 이전</button>
+          <button class="btn-next" onclick="goStep(6)">다음 &rarr; 견적 받을 방법</button>
         </div>
       </div>
 
-      <!-- ===== STEP 5 : 카톡받기 ===== -->
-      <div class="step" id="s5">
-        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">5 / 5단계</p>
+      <!-- ===== STEP 6 : 카톡받기 ===== -->
+      <div class="step" id="s6">
+        <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">6 / 6단계</p>
         <p class="sec-title">어디로 보내드릴까요?</p>
         <p class="sec-desc">견적서를 받을 방법을 골라 주세요. 어떤 방법을 고르셔도 전화는 드리지 않습니다</p>
 
@@ -386,6 +416,7 @@
         <p style="font-size:12px;color:#888;font-weight:600;margin-bottom:12px">신청 내용 확인</p>
         <div class="summary-card">
           <div class="sum-row"><span class="sum-key">회신 방법</span><span class="sum-val" id="sum-reply">-</span></div>
+          <div class="sum-row"><span class="sum-key">상품 구분</span><span class="sum-val" id="sum-pclass">-</span></div>
           <div class="sum-row"><span class="sum-key">고객 구분</span><span class="sum-val" id="sum-custtype">-</span></div>
           <div class="sum-row"><span class="sum-key">상품 종류</span><span class="sum-val" id="sum-product">-</span></div>
           <div class="sum-row"><span class="sum-key">차량</span><span class="sum-val" id="sum-car">-</span></div>
@@ -399,7 +430,7 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-prev" onclick="goStep(4)">&larr; 이전</button>
+          <button class="btn-prev" onclick="goStep(5)">&larr; 이전</button>
         </div>
         <button class="btn-submit" id="submit-btn" onclick="submitForm()">카톡으로 견적 받기 &rarr;</button>
       </div>
@@ -492,6 +523,7 @@ async function sendQuote(params) {
    STATE
    ================================================ */
 const state = {
+  productClass: "",    // 상품구분: 일반 캐피탈사 상품 / 저신용자 상품 / 구조변경 / 용도변경 상품
   custType: "",        // 개인 / 개인사업자 / 법인
   product: "",         // 장기렌트 / 리스 / 할부 / 추천받기
   brand: "", cat: "", model: "", body: "", trim: "",
@@ -837,10 +869,13 @@ function periodInput(el) {
 /* ================================================
    STEP 이동 + 단계별 검증
    ================================================ */
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 function checkStep(n) {
   if (n === 1) {
+    if (!state.productClass) return "상품 구분을 선택해 주세요";
+  }
+  if (n === 2) {
     if (state.isOther) {
       readOtherInputs();
       if (!state.otherModel) return "원하시는 차종을 적어주세요";
@@ -849,11 +884,11 @@ function checkStep(n) {
       if (!state.trim) return "차량을 트림까지 선택해 주세요";
     }
   }
-  if (n === 3) {
+  if (n === 4) {
     if (!state.custType) return "고객 구분을 선택해 주세요";
     if (!state.product) return "상품 종류를 선택해 주세요";
   }
-  if (n === 4) {
+  if (n === 5) {
     if (!state.prepay || !state.deposit) return "선납금과 보증금을 선택해 주세요";
     if (state.periodCustom && !state.period) return "원하시는 계약 기간을 입력해 주세요";
     if (!state.period || !state.km) return "계약기간과 주행거리를 선택해 주세요";
@@ -920,6 +955,7 @@ function buildSummary() {
   show("row-color", !state.isOther);
 
   document.getElementById("sum-reply").textContent = state.reply;
+  document.getElementById("sum-pclass").textContent = state.productClass || "-";
   document.getElementById("sum-custtype").textContent = state.custType || "-";
   document.getElementById("sum-product").textContent = state.product || "-";
   document.getElementById("sum-car").textContent    = carLabel() || "-";
@@ -982,6 +1018,7 @@ function buildDetail(p) {
     "회신 방법  : " + p.noti_method + " (전화 금지)" +
       (p.email && p.noti_method !== "이메일" ? " + 이메일로 견적서 함께 발송" : ""),
     "유입경로   : " + p.lead_source,
+    "상품구분   : " + p.product_class,
     "고객구분   : " + p.biz_type,
     "상품종류   : " + p.product_type,
     "",
@@ -1018,6 +1055,7 @@ async function submitForm() {
     kakao_id:         (state.reply === "카카오톡" && document.getElementById("inp-kakao").value.trim()) || "-",
     email:            document.getElementById("inp-email").value.trim(),   // 선택 — 비어 있을 수 있다
     lead_source:      (typeof octSourceLabel === "function" ? octSourceLabel() : "-"),
+    product_class:    state.productClass,
     biz_type:         state.custType,
     product_type:     state.product,
     category:         state.isOther ? "직접 입력" : state.brand + " " + state.cat,
@@ -1096,6 +1134,13 @@ document.querySelectorAll("#period-grp .chip").forEach(el => { el.tabIndex = 0; 
   if (card) card.click();
 })();
 
+/* quote.html?pc=general | low | struct 로 넘어오면 1단계 상품구분을 미리 골라 둔다 */
+(function prefillProductClass() {
+  const idx = { general: 0, low: 1, struct: 2 }[new URLSearchParams(location.search).get("pc")];
+  const card = document.querySelectorAll("#pclass-grp .sel-card")[idx];
+  if (card) card.click();
+})();
+
 (function prefillFromUrl() {
   const q = new URLSearchParams(location.search);
   if (!q.get("brand")) return;
@@ -1115,14 +1160,10 @@ document.querySelectorAll("#period-grp .chip").forEach(el => { el.tabIndex = 0; 
 
   // 세부 사양이 하나뿐이면 그것까지 골라 준다
   const bodies = document.getElementById("body-grp").children;
-  let next = "body-wrap", msg = "차량이 선택되었습니다. 세부 사양을 골라주세요.";
-  if (bodies.length === 1) { bodies[0].click(); next = "trim-wrap"; msg = "차량이 선택되었습니다. 트림을 골라주세요."; }
+  if (bodies.length === 1) bodies[0].click();
 
-  const el = document.getElementById(next);
-  if (el) {
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    showToast(msg, true);
-  }
+  // 차량은 2단계에 채워 두었다. 1단계(상품구분)를 고르고 넘어가면 이어서 고르면 된다.
+  showToast("차량이 선택되었습니다. 상품 구분을 고른 뒤 트림을 골라주세요.", true);
 })();
 </script>
 <!-- 네이버 프리미엄 로그분석 (공통) -->
