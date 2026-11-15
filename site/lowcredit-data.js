@@ -25,7 +25,7 @@ var OCT_LOWCREDIT = {
   cars: [
     { brand: "기아", name: "모닝",   note: "", deposit: "○○만 원", monthly: "○○만 원", img: "assets/cars/morning.png" },
     { brand: "기아", name: "레이",   note: "", deposit: "○○만 원", monthly: "○○만 원", img: "assets/cars/ray.png" },
-    { brand: "현대", name: "캐스퍼", note: "", deposit: "○○만 원", monthly: "○○만 원", img: "" },
+    { brand: "현대", name: "캐스퍼", note: "", deposit: "○○만 원", monthly: "○○만 원", img: "assets/cars/casper.png" },
     { brand: "현대", name: "아반떼", note: "", deposit: "○○만 원", monthly: "○○만 원", img: "assets/cars/avante.png" },
     { brand: "기아", name: "K3",     note: "", deposit: "○○만 원", monthly: "○○만 원", img: "" },
     { brand: "기아", name: "셀토스", note: "", deposit: "○○만 원", monthly: "○○만 원", img: "assets/cars/seltos.png" }
