@@ -109,7 +109,25 @@
       <div class="step" id="s2">
         <p class="sec-eyebrow" style="color:#6B7280;letter-spacing:0">2 / 6단계</p>
         <p class="sec-title">내 차 만들기</p>
-        <p class="sec-desc">제조사부터 순서대로 선택해 주세요<br>수입차 · 다른 브랜드는 <b>직접 입력</b>을 선택하고 차종을 적어주세요</p>
+        <p class="sec-desc">원하는 차가 있으면 <b>제조사 선택</b>, 예산에 맞는 차를 추천받으려면 <b>가격대로 선택</b>을 골라주세요</p>
+
+        <!-- 선택 방식 : 제조사 선택 / 가격대로 선택 (mytruck 「가격으로 제안받기」 와 같은 방식) -->
+        <div class="frow" id="mode-wrap">
+          <span class="flabel">선택 방식</span>
+          <div class="card-grid" id="mode-grp">
+            <div class="sel-card sel" id="mode-car" onclick="setMode('car')">
+              <div class="ct">제조사 선택</div>
+              <div class="cs">제조사부터 원하는 차량을 직접 선택</div>
+            </div>
+            <div class="sel-card" id="mode-price" onclick="setMode('price')">
+              <div class="ct">가격대로 선택</div>
+              <div class="cs">월 납입금에 맞는 차량을 추천받기</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="carmode-wrap">
+        <p class="contact-hint" style="margin:-4px 0 14px">제조사부터 순서대로 선택해 주세요. 수입차 · 다른 브랜드는 <b>직접 입력</b>을 선택하고 차종을 적어주세요.</p>
 
         <div class="frow">
           <span class="flabel">제조사</span>
@@ -179,6 +197,43 @@
               <div class="price-break" id="price-break"></div>
             </div>
             <div class="price-note">제조사 가격표 기준<br>실제 견적과 다를 수 있어요</div>
+          </div>
+        </div>
+        </div><!-- /carmode-wrap -->
+
+        <!-- 가격대로 선택 -->
+        <div id="pricemode-wrap" style="display:none">
+          <div class="frow">
+            <span class="flabel">희망 월 납입금</span>
+            <div class="chips" id="band-grp">
+              <div class="chip" onclick="pickBand(this)">40만원 이하</div>
+              <div class="chip" onclick="pickBand(this)">50만원 이하</div>
+              <div class="chip" onclick="pickBand(this)">70만원 이하</div>
+              <div class="chip" onclick="pickBand(this)">70만원 초과</div>
+            </div>
+          </div>
+
+          <div class="frow" id="kind-wrap" style="display:none">
+            <span class="flabel">차량 종류</span>
+            <div class="card-grid one" id="kind-grp">
+              <div class="sel-card" onclick="pickKind(this,false)">
+                <div class="ct">승용 차량</div>
+                <div class="cs">경차 &middot; 세단</div>
+              </div>
+              <div class="sel-card" onclick="pickKind(this,false)">
+                <div class="ct">SUV &middot; RV 차량</div>
+                <div class="cs">SUV &middot; 미니밴 등</div>
+              </div>
+              <div class="sel-card" onclick="pickKind(this,true)">
+                <div class="ct">그 이외 차량</div>
+                <div class="cs">승합 &middot; 화물 &middot; 전기차 등 &middot; 직접 입력</div>
+              </div>
+            </div>
+            <div id="kind-custom-wrap" style="display:none;margin-top:10px">
+              <input class="input-field" type="text" id="kind-custom" maxlength="60"
+                     placeholder="예) 전기차 / 9인승 승합 / 1톤 화물">
+              <p class="contact-hint">원하시는 차량 종류를 직접 적어주세요.</p>
+            </div>
           </div>
         </div>
 
@@ -534,7 +589,12 @@ const state = {
 
   /* 직접 입력 — 가격표에 없는 차(수입차 · 다른 브랜드) */
   isOther: false,
-  otherModel: "", otherOpts: ""
+  otherModel: "", otherOpts: "",
+
+  /* 가격대로 선택 — 차종을 고르지 않고 월 납입금으로 추천받는다 */
+  byPrice: false,
+  priceBand: "",       // 40만원 이하 / 50만원 이하 / 70만원 이하 / 70만원 초과
+  vehKind: "", vehKindCustom: false, vehKindText: ""
 };
 
 const OTHER_BRAND = "직접 입력";
@@ -591,6 +651,48 @@ function hideFrom(level) {
     fill("cat-grp", "cat-wrap", Object.keys(CAR_TREE[brand]), "sub-chip", pickCat);
   });
 })();
+
+/* ── 선택 방식 : 제조사 선택 / 가격대로 선택 ── */
+function setMode(mode) {
+  const price = (mode === "price");
+  if (price && !state.byPrice) {
+    // 차종 선택을 비운다 — 직접 입력도 함께 풀린다
+    state.brand = state.cat = state.model = state.body = state.trim = "";
+    state.opts = [];
+    state.isOther = false;
+    state.otherModel = state.otherOpts = "";
+    document.querySelectorAll("#brand-grp .chip").forEach(c => c.classList.remove("sel"));
+    document.getElementById("other-wrap").style.display = "none";
+    hideFrom(0);
+  }
+  state.byPrice = price;
+  document.getElementById("mode-car").classList.toggle("sel", !price);
+  document.getElementById("mode-price").classList.toggle("sel", price);
+  document.getElementById("carmode-wrap").style.display   = price ? "none" : "block";
+  document.getElementById("pricemode-wrap").style.display = price ? "block" : "none";
+}
+
+function pickBand(el) {
+  document.querySelectorAll("#band-grp .chip").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state.priceBand = el.textContent.trim();
+  document.getElementById("kind-wrap").style.display = "block";
+}
+
+function pickKind(el, custom) {
+  document.querySelectorAll("#kind-grp .sel-card").forEach(c => c.classList.remove("sel"));
+  el.classList.add("sel");
+  state.vehKind = el.querySelector(".ct").textContent.trim();
+  state.vehKindCustom = custom;
+  document.getElementById("kind-custom-wrap").style.display = custom ? "block" : "none";
+  if (custom) document.getElementById("kind-custom").focus();
+}
+
+function kindLabel() {
+  if (!state.vehKind) return "-";
+  if (state.vehKindCustom) state.vehKindText = (document.getElementById("kind-custom").value || "").trim();
+  return state.vehKindCustom ? "기타 (" + (state.vehKindText || "미입력") + ")" : state.vehKind;
+}
 
 /* 직접 입력값 수집 */
 function readOtherInputs() {
@@ -872,7 +974,14 @@ function checkStep(n) {
     if (!state.productClass) return "상품 구분을 선택해 주세요";
   }
   if (n === 2) {
-    if (state.isOther) {
+    if (state.byPrice) {
+      if (!state.priceBand) return "희망 월 납입금을 선택해 주세요";
+      if (!state.vehKind) return "차량 종류를 선택해 주세요";
+      if (state.vehKindCustom) {
+        state.vehKindText = (document.getElementById("kind-custom").value || "").trim();
+        if (!state.vehKindText) return "원하시는 차량 종류를 적어주세요";
+      }
+    } else if (state.isOther) {
       readOtherInputs();
       if (!state.otherModel) return "원하시는 차종을 적어주세요";
     } else {
@@ -933,6 +1042,7 @@ function render(n) {
    SUMMARY
    ================================================ */
 function carLabel() {
+  if (state.byPrice) return "[가격 제안] 월 " + state.priceBand + " · " + kindLabel();
   if (state.isOther) return state.otherModel ? "[직접 입력] " + state.otherModel : "[직접 입력] 차종 미입력";
   const parts = [];
   [state.brand, state.model, state.body, state.trim].forEach(v => {
@@ -947,8 +1057,9 @@ function buildSummary() {
 
   // 직접 입력 차량은 가격표가 없어 차량가 · 색상 줄을 감춘다
   const show = (id, on) => document.getElementById(id).style.display = on ? "flex" : "none";
-  show("row-price", !state.isOther);
-  show("row-color", !state.isOther);
+  show("row-price", !state.isOther && !state.byPrice);
+  show("row-color", !state.isOther && !state.byPrice);
+  show("row-opts", !state.byPrice);   // 가격대로 선택은 차종을 고르지 않아 제조사 옵션이 없다
 
   document.getElementById("sum-reply").textContent = state.reply;
   document.getElementById("sum-pclass").textContent = state.productClass || "-";
@@ -987,7 +1098,13 @@ function validateAll() {
 }
 
 function buildDetail(p) {
-  const carBlock = state.isOther
+  const carBlock = state.byPrice
+    ? [
+        "── 가격대로 선택 (차량 추천 요청)",
+        "희망월납입 : " + p.price_band,
+        "차량종류   : " + p.vehicle_kind
+      ]
+    : state.isOther
     ? [
         "── 차량 (직접 입력 · 가격 확인 필요)",
         "차종       : " + p.car_full,
@@ -1054,14 +1171,17 @@ async function submitForm() {
     product_class:    state.productClass,
     biz_type:         state.custType,
     product_type:     state.product,
-    category:         state.isOther ? "직접 입력" : state.brand + " " + state.cat,
+    category:         state.byPrice ? "가격대로 선택" : state.isOther ? "직접 입력" : state.brand + " " + state.cat,
     car_full:         carLabel(),
-    base_price:       state.isOther ? "확인 필요" : won(node.price) + "원",
-    factory_options:  state.isOther ? (state.otherOpts || "없음")
+    price_band:       state.byPrice ? "월 " + state.priceBand : "-",
+    vehicle_kind:     state.byPrice ? kindLabel() : "-",
+    base_price:       state.byPrice ? "-" : state.isOther ? "확인 필요" : won(node.price) + "원",
+    factory_options:  state.byPrice ? "해당 없음 (가격 제안)" : state.isOther ? (state.otherOpts || "없음")
                       : (state.opts.length ? state.opts.map(o => o.n + "(+" + won(o.p) + "원)").join(", ") : "없음"),
-    option_price:     state.isOther ? "-" : won(optSum()) + "원",
-    car_color:        state.isOther ? "-" : colorLabel(),
-    estimated_price:  state.isOther ? "확인 필요" : won(totalPrice()) + "원",
+    option_price:     (state.byPrice || state.isOther) ? "-" : won(optSum()) + "원",
+    car_color:        (state.byPrice || state.isOther) ? "-" : colorLabel(),
+    estimated_price:  state.byPrice ? "월 납입금 " + state.priceBand + " 기준 제안"
+                      : state.isOther ? "확인 필요" : won(totalPrice()) + "원",
     external_options: state.ext.length ? state.ext.join(", ") : "없음",
     external_custom:  state.extCustom.length ? state.extCustom.join(", ") : "없음",
     prepay:           state.prepay,
