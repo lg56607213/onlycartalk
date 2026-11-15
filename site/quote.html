@@ -97,10 +97,6 @@
               <div class="ct">저신용자 상품</div>
               <div class="cs">면허증만 있으면 가능 &middot; 연체 / 신불자 / 개인회생 무관</div>
             </div>
-            <div class="sel-card" onclick="selCard(this,'pclass-grp','productClass')">
-              <div class="ct">구조변경 / 용도변경 상품</div>
-              <div class="cs">구조변경 비용 리스료 포함 &middot; 반납 시 원상복구 제외</div>
-            </div>
           </div>
         </div>
 
@@ -523,7 +519,7 @@ async function sendQuote(params) {
    STATE
    ================================================ */
 const state = {
-  productClass: "",    // 상품구분: 일반 캐피탈사 상품 / 저신용자 상품 / 구조변경 / 용도변경 상품
+  productClass: "",    // 상품구분: 일반 캐피탈사 상품 / 저신용자 상품
   custType: "",        // 개인 / 개인사업자 / 법인
   product: "",         // 장기렌트 / 리스 / 할부 / 추천받기
   brand: "", cat: "", model: "", body: "", trim: "",
@@ -1134,9 +1130,9 @@ document.querySelectorAll("#period-grp .chip").forEach(el => { el.tabIndex = 0; 
   if (card) card.click();
 })();
 
-/* quote.html?pc=general | low | struct 로 넘어오면 1단계 상품구분을 미리 골라 둔다 */
+/* quote.html?pc=general | low 로 넘어오면 1단계 상품구분을 미리 골라 둔다 */
 (function prefillProductClass() {
-  const idx = { general: 0, low: 1, struct: 2 }[new URLSearchParams(location.search).get("pc")];
+  const idx = { general: 0, low: 1 }[new URLSearchParams(location.search).get("pc")];
   const card = document.querySelectorAll("#pclass-grp .sel-card")[idx];
   if (card) card.click();
 })();
