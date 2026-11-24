@@ -51,6 +51,8 @@ async function handleQuote(request, env, url) {
 
   // 구분값 — 저신용자 전용 폼(lowcredit.html)은 kind: "lowcredit" 로 들어온다
   const lowCredit = str(p.kind, 20) === 'lowcredit';
+  // 레이 즉시출고 폼(ray.html)은 kind: "ray" 로 들어온다
+  const ray = str(p.kind, 20) === 'ray';
   // 회신 방법 — 고객이 고른 값 (카카오톡 / 문자 / 이메일). 그 외 값은 카카오톡으로 본다.
   const reply = ['카카오톡', '문자', '이메일'].includes(str(p.noti_method, 10)) ? str(p.noti_method, 10) : '카카오톡';
   if (reply === '이메일' && !email) return json({ ok: false, error: '이메일 주소를 확인해 주세요.' }, 400);
@@ -66,8 +68,10 @@ async function handleQuote(request, env, url) {
       replyTo: email,
       subject: lowCredit
         ? `[온니카톡 저신용 전용] ${phone} / ${car.replace(/^\[저신용 전용\]\s*/, '')}`
-        : `[온니카톡 견적] ${name} / ${car}`,
-      html: mailHtml({ lowCredit, reply, name, car, phone, kakao: oneLine(str(p.kakao_id, 30)) || '-', email: email || '-', detail }),
+        : ray
+          ? `[온니카톡 레이 즉시출고] ${phone} / ${car.replace(/^\[레이 즉시출고\]\s*/, '')}`
+          : `[온니카톡 견적] ${name} / ${car}`,
+      html: mailHtml({ lowCredit, ray, reply, name, car, phone, kakao: oneLine(str(p.kakao_id, 30)) || '-', email: email || '-', detail }),
     });
     await env.MAILER.send(new EmailMessage(env.MAIL_FROM, env.MAIL_TO, raw));
     return json({ ok: true });
@@ -88,16 +92,18 @@ function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function mailHtml({ lowCredit, reply, name, car, phone, kakao, email, detail }) {
+function mailHtml({ lowCredit, ray, reply, name, car, phone, kakao, email, detail }) {
   const row = (k, v) =>
     `<tr><th style="width:110px;text-align:left;padding:8px 10px;background:#f5f5f5;border-bottom:1px solid #e5e5e5;font-weight:700">${esc(k)}</th><td style="padding:8px 10px;border-bottom:1px solid #e5e5e5">${esc(v)}</td></tr>`;
   return `<!doctype html><html><body style="margin:0;padding:24px;background:#ffffff;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;font-size:14px">
 <div style="max-width:620px;margin:0 auto;border-top:4px solid #F2C230">
-<h1 style="font-size:18px;margin:18px 0 6px">${lowCredit ? '온니카톡 저신용 전용 — 차량 추천 요청' : '온니카톡 견적 신청'}</h1>
+<h1 style="font-size:18px;margin:18px 0 6px">${lowCredit ? '온니카톡 저신용 전용 — 차량 추천 요청' : ray ? '온니카톡 레이 즉시출고 — 무보증 상담 요청' : '온니카톡 견적 신청'}</h1>
 <p style="margin:0 0 16px;color:#444"><b>${esc(reply)}</b>(으)로 회신해 주세요. 전화는 걸지 않습니다.</p>
 <table style="width:100%;border-collapse:collapse;border-top:2px solid #1a1a1a;font-size:14px">
 ${lowCredit
     ? `${row('구분', '저신용 전용')}${row('휴대폰', phone)}${row('조건', car)}`
+    : ray
+    ? `${row('구분', '레이 즉시출고 · 무보증')}${row('휴대폰', phone)}${row('조건', car)}`
     : `${row('회신 방법', reply)}${row('이름/상호', name)}${row('휴대폰', phone)}${row('카톡 ID', kakao)}${row('이메일', email)}${row('차량', car)}`}
 </table>
 <pre style="margin:18px 0 0;padding:14px 16px;background:#f8f9fb;border:1px solid #e5e8ee;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-all">${esc(detail)}</pre>

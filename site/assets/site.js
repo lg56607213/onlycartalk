@@ -209,3 +209,18 @@ function octLowCreditConversion() {
     if (typeof window.gtag === 'function') window.gtag('event', 'lowcredit_submit');
   } catch (e) {}
 }
+
+/* ================================================
+   레이 즉시출고 폼 제출 완료 — 신차 견적 · 저신용과 따로 집계한다
+   (완료 화면 주소 /ray#done · 화면 id: ray-done)
+   ================================================ */
+var OCT_RAY_CNV_TYPE = "5";   // 네이버 전환 유형 — 광고 계정의 전환 설정에 맞춰 바꾼다
+
+function octRayConversion() {
+  octConversion(0, OCT_RAY_CNV_TYPE);
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'ray_submit', form: 'ray' });
+    if (typeof window.gtag === 'function') window.gtag('event', 'ray_submit');
+  } catch (e) {}
+}
