@@ -342,7 +342,7 @@
 <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
 <script type="text/javascript">
 if (!wcs_add) var wcs_add = {};
-wcs_add["wa"] = "";                 /* TODO: onlycartalk 인증키를 넣을 것 */
+wcs_add["wa"] = window.OCT_NAVER_WA || "";   // 공통키는 assets/site.js 의 OCT_NAVER_WA 한 곳에서 관리
 if (!_nasa) var _nasa = {};
 if (window.wcs && wcs_add["wa"]) {
   wcs.inflow("onlycartalk.com");
