@@ -209,7 +209,7 @@ function fmtPhone(el) {
      아래 OCT_NAVER_WA 한 곳에만 넣으면 모든 페이지의 방문·전환 추적이 켜진다.
      (각 페이지 하단 공통 스크립트가 이 값을 읽는다. site.js 가 그보다 먼저 로드된다)
    ================================================ */
-var OCT_NAVER_WA = "";
+var OCT_NAVER_WA = "s_5032e7c34086";
 
 function octNaverConv(type) {
   try {
